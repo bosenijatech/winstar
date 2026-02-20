@@ -1,4 +1,4 @@
-name: powergroupess
+name: winstar
 description: "Ess"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -66,6 +66,7 @@ dependencies:
   multi_dropdown: ^3.0.1
   change_app_package_name: ^1.5.0
   unique_identifier: ^0.4.0
+  firebase_core: ^4.4.0
     
 dev_dependencies:
   flutter_test:
@@ -88,9 +89,9 @@ flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
   remove_alpha_ios: true
-  image_path: "assets/images/powerlogo.jpg"
+  image_path: "assets/images/winlogo.jpg"
   adaptive_icon_background: "#ffffff"
-  adaptive_icon_foreground: "assets/images/powerlogo.jpg"
+  adaptive_icon_foreground: "assets/images/winlogo.jpg"
   
 flutter:
 

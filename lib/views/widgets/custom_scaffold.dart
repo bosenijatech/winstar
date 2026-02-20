@@ -27,7 +27,7 @@
 
 
 import 'package:flutter/material.dart';
-import 'package:powergroupess/utils/Appcolor.dart';
+import 'package:winstar/utils/Appcolor.dart';
 
 class CustomScaffold extends StatelessWidget {
   const CustomScaffold({super.key, this.child, this.title});

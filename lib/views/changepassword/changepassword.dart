@@ -1,13 +1,13 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:powergroupess/services/apiservice.dart';
-import 'package:powergroupess/services/pref.dart';
-import 'package:powergroupess/utils/app_utils.dart';
-import 'package:powergroupess/utils/appcolor.dart';
-import 'package:powergroupess/views/login/loginpage.dart';
-import 'package:powergroupess/views/widgets/assets_image_widget.dart';
-import 'package:powergroupess/views/widgets/custom_button.dart';
+import 'package:winstar/services/apiservice.dart';
+import 'package:winstar/services/pref.dart';
+import 'package:winstar/utils/app_utils.dart';
+import 'package:winstar/utils/appcolor.dart';
+import 'package:winstar/views/login/loginpage.dart';
+import 'package:winstar/views/widgets/assets_image_widget.dart';
+import 'package:winstar/views/widgets/custom_button.dart';
 
 class ChangePassword extends StatefulWidget {
   const ChangePassword({super.key});

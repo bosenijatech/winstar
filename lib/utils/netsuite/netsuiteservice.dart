@@ -1,8 +1,8 @@
-import 'package:powergroupess/services/pref.dart';
-import 'package:powergroupess/utils/netsuite/credentials.dart';
-import 'package:powergroupess/utils/netsuite/handlers/oauth_handler.dart';
-import 'package:powergroupess/utils/netsuite/handlers/request_handler.dart';
-import 'package:powergroupess/utils/netsuite/netsuite_client.dart';
+import 'package:winstar/services/pref.dart';
+import 'package:winstar/utils/netsuite/credentials.dart';
+import 'package:winstar/utils/netsuite/handlers/oauth_handler.dart';
+import 'package:winstar/utils/netsuite/handlers/request_handler.dart';
+import 'package:winstar/utils/netsuite/netsuite_client.dart';
 
 class NetSuiteApiService {
   static const int timeOutDuration = 50;

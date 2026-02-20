@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:powergroupess/models/loginmodel.dart';
+import 'package:winstar/models/loginmodel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Prefs {

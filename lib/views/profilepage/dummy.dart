@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:powergroupess/utils/Appcolor.dart';
+import 'package:winstar/utils/Appcolor.dart';
 
 class DummyPage extends StatefulWidget {
   const DummyPage({super.key});

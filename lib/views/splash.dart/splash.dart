@@ -1,12 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:powergroupess/routes.dart';
-import 'package:powergroupess/services/pref.dart';
-import 'package:powergroupess/utils/appcolor.dart';
-import 'package:powergroupess/utils/sharedprefconstants.dart';
-import 'package:powergroupess/views/landingpage/landingpage.dart';
-import 'package:powergroupess/views/login/loginpage.dart';
+import 'package:winstar/routes.dart';
+import 'package:winstar/services/pref.dart';
+import 'package:winstar/utils/appcolor.dart';
+import 'package:winstar/utils/sharedprefconstants.dart';
+import 'package:winstar/views/landingpage/landingpage.dart';
+import 'package:winstar/views/login/loginpage.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -41,7 +41,7 @@ class _SplashScreenState extends State<SplashScreen> {
           alignment: Alignment.center,
           children: [
             Image(
-              image: AssetImage("assets/images/powerlogo.jpg"),
+              image: AssetImage("assets/images/powelogo.jpg"),
               height: 100,
               fit: BoxFit.fill,
             ),

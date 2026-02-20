@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:powergroupess/utils/app_utils.dart';
-import 'package:powergroupess/views/leave/leavebalance.dart';
-import 'package:powergroupess/views/leave/leavehistory.dart';
+import 'package:winstar/utils/app_utils.dart';
+import 'package:winstar/views/leave/leavebalance.dart';
+import 'package:winstar/views/leave/leavehistory.dart';
 
 class LeaveandHistoryTab extends StatefulWidget {
   const LeaveandHistoryTab({super.key});

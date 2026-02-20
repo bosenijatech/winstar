@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
-import 'package:powergroupess/models/loginmodel.dart';
-import 'package:powergroupess/services/pref.dart';
-import 'package:powergroupess/utils/api_details.dart';
-import 'package:powergroupess/utils/constants.dart';
-import 'package:powergroupess/utils/sharedprefconstants.dart';
+import 'package:winstar/models/loginmodel.dart';
+import 'package:winstar/services/pref.dart';
+import 'package:winstar/utils/api_details.dart';
+import 'package:winstar/utils/constants.dart';
+import 'package:winstar/utils/sharedprefconstants.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 

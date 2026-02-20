@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:powergroupess/views/widgets/network_status_service.dart';
+import 'package:winstar/views/widgets/network_status_service.dart';
 import 'package:provider/provider.dart';
 
 class AppScaffold extends StatelessWidget {

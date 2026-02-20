@@ -5,11 +5,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:powergroupess/models/leavecontroller.dart';
-import 'package:powergroupess/utils/app_utils.dart';
-import 'package:powergroupess/utils/appcolor.dart';
-import 'package:powergroupess/utils/constants.dart';
-import 'package:powergroupess/views/widgets/colorstatus.dart';
+import 'package:winstar/models/leavecontroller.dart';
+import 'package:winstar/utils/app_utils.dart';
+import 'package:winstar/utils/appcolor.dart';
+import 'package:winstar/utils/constants.dart';
+import 'package:winstar/views/widgets/colorstatus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ViewLeavePageNew extends StatefulWidget {

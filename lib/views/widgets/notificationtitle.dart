@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:powergroupess/utils/appcolor.dart';
+import 'package:winstar/utils/appcolor.dart';
 
 class NotificationTile extends StatelessWidget {
   final Function onTap;

@@ -3,17 +3,17 @@ import 'dart:convert';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:powergroupess/models/empinfomodel.dart';
-import 'package:powergroupess/models/relationmodel.dart';
-import 'package:powergroupess/services/apiservice.dart';
-import 'package:powergroupess/services/pref.dart';
-import 'package:powergroupess/utils/app_utils.dart';
-import 'package:powergroupess/utils/appcolor.dart';
-import 'package:powergroupess/utils/constants.dart';
-import 'package:powergroupess/utils/netsuite/netsuiteservice.dart';
-import 'package:powergroupess/utils/sharedprefconstants.dart';
-import 'package:powergroupess/views/widgets/assets_image_widget.dart';
-import 'package:powergroupess/views/widgets/custom_button.dart';
+import 'package:winstar/models/empinfomodel.dart';
+import 'package:winstar/models/relationmodel.dart';
+import 'package:winstar/services/apiservice.dart';
+import 'package:winstar/services/pref.dart';
+import 'package:winstar/utils/app_utils.dart';
+import 'package:winstar/utils/appcolor.dart';
+import 'package:winstar/utils/constants.dart';
+import 'package:winstar/utils/netsuite/netsuiteservice.dart';
+import 'package:winstar/utils/sharedprefconstants.dart';
+import 'package:winstar/views/widgets/assets_image_widget.dart';
+import 'package:winstar/views/widgets/custom_button.dart';
 
 import 'package:intl/intl.dart';
 

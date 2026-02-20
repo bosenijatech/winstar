@@ -16,7 +16,7 @@
     <uses-feature android:name="android.hardware.camera" android:required="false" />
     
     <application
-        android:label="powergroupess"
+        android:label="winstar"
         android:name="${applicationName}"
          android:enableOnBackInvokedCallback="true"
          android:requestLegacyExternalStorage="true"

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:powergroupess/routenames.dart';
-import 'package:powergroupess/routes.dart';
-import 'package:powergroupess/services/pref.dart';
-import 'package:powergroupess/utils/appcolor.dart';
-import 'package:powergroupess/views/widgets/custom_widgets.dart';
-import 'package:powergroupess/views/widgets/network_status_service.dart';
+import 'package:winstar/routenames.dart';
+import 'package:winstar/routes.dart';
+import 'package:winstar/services/pref.dart';
+import 'package:winstar/utils/appcolor.dart';
+import 'package:winstar/views/widgets/custom_widgets.dart';
+import 'package:winstar/views/widgets/network_status_service.dart';
 import 'package:provider/provider.dart';
 
 void main() async {

@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:powergroupess/utils/appcolor.dart';
+import 'package:winstar/utils/appcolor.dart';
 
 class Customappbar extends StatelessWidget implements PreferredSizeWidget {
   const Customappbar(

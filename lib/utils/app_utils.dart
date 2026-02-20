@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:powergroupess/utils/appcolor.dart';
+import 'package:winstar/utils/appcolor.dart';
 import 'package:path_provider/path_provider.dart';
 
 class AppUtils {

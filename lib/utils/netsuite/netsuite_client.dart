@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:powergroupess/utils/netsuite/handlers/request_handler.dart';
+import 'package:winstar/utils/netsuite/handlers/request_handler.dart';
 import 'package:http/http.dart' as http;
 
 class NetsuiteClient extends http.BaseClient {

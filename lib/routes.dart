@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:powergroupess/routenames.dart';
-import 'package:powergroupess/views/assetrequest/assetapply.dart';
-import 'package:powergroupess/views/assetrequest/viewassets.dart';
-import 'package:powergroupess/views/attendance/attendance_history.dart';
-import 'package:powergroupess/views/attendance/view_attendance.dart';
-import 'package:powergroupess/views/changepassword/changepassword.dart';
-import 'package:powergroupess/views/dutytravel/dutytravelapply.dart';
-import 'package:powergroupess/views/dutytravel/dutytraveldetail.dart';
-import 'package:powergroupess/views/grievances/applygrievance.dart';
-import 'package:powergroupess/views/landingpage/landingpage.dart';
-import 'package:powergroupess/views/leave/leaveapplypage.dart';
-import 'package:powergroupess/views/leave/viewleavedetails.dart';
-import 'package:powergroupess/views/letterpage/letterapply.dart';
-import 'package:powergroupess/views/letterpage/letterdetails.dart';
-import 'package:powergroupess/views/login/loginpage.dart';
-import 'package:powergroupess/views/payslip/viewpayslip.dart';
-import 'package:powergroupess/views/reimbursement/reimburesementapply.dart';
-import 'package:powergroupess/views/reimbursement/reimbursementdetails.dart';
-import 'package:powergroupess/views/rejoin/rejointab.dart';
-import 'package:powergroupess/views/splash.dart/splash.dart';
+import 'package:winstar/routenames.dart';
+import 'package:winstar/views/assetrequest/assetapply.dart';
+import 'package:winstar/views/assetrequest/viewassets.dart';
+import 'package:winstar/views/attendance/attendance_history.dart';
+import 'package:winstar/views/attendance/view_attendance.dart';
+import 'package:winstar/views/changepassword/changepassword.dart';
+import 'package:winstar/views/dutytravel/dutytravelapply.dart';
+import 'package:winstar/views/dutytravel/dutytraveldetail.dart';
+import 'package:winstar/views/grievances/applygrievance.dart';
+import 'package:winstar/views/landingpage/landingpage.dart';
+import 'package:winstar/views/leave/leaveapplypage.dart';
+import 'package:winstar/views/leave/viewleavedetails.dart';
+import 'package:winstar/views/letterpage/letterapply.dart';
+import 'package:winstar/views/letterpage/letterdetails.dart';
+import 'package:winstar/views/login/loginpage.dart';
+import 'package:winstar/views/payslip/viewpayslip.dart';
+import 'package:winstar/views/reimbursement/reimburesementapply.dart';
+import 'package:winstar/views/reimbursement/reimbursementdetails.dart';
+import 'package:winstar/views/rejoin/rejointab.dart';
+import 'package:winstar/views/splash.dart/splash.dart';
 
 // class AppRoutes {
 //   static final routes = {

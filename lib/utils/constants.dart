@@ -8,7 +8,7 @@ class AppConstants {
   static String apiBaseUrl = 'https://mobapp.nijatech.com:5500/';
   //static String apiBaseUrl = 'http://192.168.0.101:4000/';
 
-  static const String androidAppPackageName = "com.nijatech.powergroupess";
+  static const String androidAppPackageName = "com.nijatech.winstar";
   static const String iOSAppID = "6738953923";
 
   static const String netSuiteapiBaseUrl =

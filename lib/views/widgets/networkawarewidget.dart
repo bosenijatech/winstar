@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:powergroupess/views/widgets/nointernet.dart';
+import 'package:winstar/views/widgets/nointernet.dart';
 import 'package:provider/provider.dart';
 
 import 'network_status_service.dart';

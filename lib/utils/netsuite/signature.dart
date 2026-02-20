@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
-import 'package:powergroupess/utils/netsuite/credentials.dart';
-import 'package:powergroupess/utils/netsuite/enum/signature_method.dart';
+import 'package:winstar/utils/netsuite/credentials.dart';
+import 'package:winstar/utils/netsuite/enum/signature_method.dart';
 
 class Signature {
   final Credentials credentials;

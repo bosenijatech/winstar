@@ -1,11 +1,11 @@
 // import 'package:flutter/material.dart';
 // import 'package:flutter_svg/svg.dart';
-// import 'package:powergroupess/routenames.dart';
-// import 'package:powergroupess/utils/app_utils.dart';
-// import 'package:powergroupess/utils/appcolor.dart';
-// import 'package:powergroupess/utils/constants.dart';
-// import 'package:powergroupess/views/widgets/custom_scaffold.dart';
-// import 'package:powergroupess/views/widgets/customappbar.dart';
+// import 'package:winstar/routenames.dart';
+// import 'package:winstar/utils/app_utils.dart';
+// import 'package:winstar/utils/appcolor.dart';
+// import 'package:winstar/utils/constants.dart';
+// import 'package:winstar/views/widgets/custom_scaffold.dart';
+// import 'package:winstar/views/widgets/customappbar.dart';
 // import 'package:provider/provider.dart';
 
 // class Menuspage extends StatelessWidget {
@@ -115,9 +115,9 @@
 
 
 import 'package:flutter/material.dart';
-import 'package:powergroupess/routenames.dart';
-import 'package:powergroupess/utils/constants.dart';
-import 'package:powergroupess/views/widgets/custom_scaffold.dart';
+import 'package:winstar/routenames.dart';
+import 'package:winstar/utils/constants.dart';
+import 'package:winstar/views/widgets/custom_scaffold.dart';
 
 class Menuspage extends StatelessWidget {
   const Menuspage({super.key});

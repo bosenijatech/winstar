@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:powergroupess/models/empinfomodel.dart';
-import 'package:powergroupess/services/apiservice.dart';
-import 'package:powergroupess/utils/logouthelper.dart';
+import 'package:winstar/models/empinfomodel.dart';
+import 'package:winstar/services/apiservice.dart';
+import 'package:winstar/utils/logouthelper.dart';
 
 class UserStatusService {
   // ✅ Singleton setup

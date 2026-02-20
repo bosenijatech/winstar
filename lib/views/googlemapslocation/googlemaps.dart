@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:powergroupess/utils/app_utils.dart';
-import 'package:powergroupess/utils/appcolor.dart';
-import 'package:powergroupess/utils/constants.dart';
+import 'package:winstar/utils/app_utils.dart';
+import 'package:winstar/utils/appcolor.dart';
+import 'package:winstar/utils/constants.dart';
 import 'package:permission_handler/permission_handler.dart' as handler;
 import 'package:intl/intl.dart';
 import 'package:location/location.dart' as loca;

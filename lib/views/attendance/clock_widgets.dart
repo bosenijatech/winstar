@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:powergroupess/utils/app_utils.dart';
+import 'package:winstar/utils/app_utils.dart';
 import 'package:intl/intl.dart';
 
 class ClockWidget extends StatelessWidget {
