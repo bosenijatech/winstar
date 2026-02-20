@@ -1,0 +1,876 @@
+import 'dart:convert';
+import 'dart:io';
+import 'dart:math';
+import 'dart:typed_data';
+
+import 'package:dropdown_search/dropdown_search.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:powergroupess/models/documentmodel.dart';
+import 'package:powergroupess/models/empinfomodel.dart';
+import 'package:powergroupess/models/filemodel.dart';
+import 'package:powergroupess/models/relationmodel.dart';
+import 'package:powergroupess/services/apiservice.dart';
+import 'package:powergroupess/services/pref.dart';
+import 'package:powergroupess/utils/app_utils.dart';
+import 'package:powergroupess/utils/appcolor.dart';
+import 'package:powergroupess/utils/constants.dart';
+import 'package:powergroupess/utils/netsuite/netsuiteservice.dart';
+import 'package:powergroupess/utils/sharedprefconstants.dart';
+import 'package:powergroupess/views/widgets/assets_image_widget.dart';
+import 'package:powergroupess/views/widgets/custom_button.dart';
+import 'package:image_picker/image_picker.dart';
+
+import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+class EditDependsIdDetails extends StatefulWidget {
+  final EmpInfoModel model;
+  final bool? iseditable;
+  final int? position;
+  const EditDependsIdDetails(
+      {super.key,
+      required this.model,
+      required this.iseditable,
+      required this.position});
+
+  @override
+  State<EditDependsIdDetails> createState() => _EditDependsIdDetailsState();
+}
+
+class _EditDependsIdDetailsState extends State<EditDependsIdDetails> {
+  TextEditingController controllertypeid = TextEditingController();
+  TextEditingController controllertypename = TextEditingController();
+  TextEditingController idnumbercontroller = TextEditingController();
+  TextEditingController controllerrelationname = TextEditingController();
+  TextEditingController controllercompanyname = TextEditingController();
+  TextEditingController controllercountryissue = TextEditingController();
+  TextEditingController controllerissuedate = TextEditingController();
+  TextEditingController controllerexpirydate = TextEditingController();
+  TextEditingController controllerdesignation = TextEditingController();
+  TextEditingController remarks = TextEditingController();
+  TextEditingController controllerremainderdate = TextEditingController();
+  TextEditingController attachmentcontroller = TextEditingController();
+
+  List<String> dependentslist = [];
+  RelationModel relationmodel = RelationModel();
+
+  String? remainderval;
+  bool loading = false;
+  DocumentModel documentModel = DocumentModel();
+  String? typeNo;
+  String? typeName;
+
+  List<AttachModel> attachlist = [];
+  String attachmentID = "";
+  String attachmentURL = "";
+
+  final picker = ImagePicker();
+  File? imagefile;
+
+  @override
+  void initState() {
+    if (widget.iseditable == true) {
+      typeName = widget
+          .model.message!.dependantIdDetails![widget.position!.toInt()].idType;
+
+      typeNo = widget.model.message!
+          .dependantIdDetails![widget.position!.toInt()].idTypeNo;
+
+      controllertypeid.text = widget
+          .model.message!.dependantIdDetails![widget.position!.toInt()].idTypeNo
+          .toString();
+
+      controllertypename.text = widget
+          .model.message!.dependantIdDetails![widget.position!.toInt()].idType
+          .toString();
+
+      idnumbercontroller.text = widget
+          .model.message!.dependantIdDetails![widget.position!.toInt()].idNo
+          .toString();
+
+      controllerrelationname.text = widget.model.message!
+          .dependantIdDetails![widget.position!.toInt()].dependantIdName
+          .toString();
+
+      controllercompanyname.text = widget.model.message!
+          .dependantIdDetails![widget.position!.toInt()].companyName
+          .toString();
+      controllercountryissue.text = widget.model.message!
+          .dependantIdDetails![widget.position!.toInt()].countryOfIssue
+          .toString();
+
+      controllerissuedate.text = widget.model.message!
+          .dependantIdDetails![widget.position!.toInt()].issueDate
+          .toString();
+      controllerexpirydate.text = widget.model.message!
+          .dependantIdDetails![widget.position!.toInt()].expiryDate
+          .toString();
+
+      controllerdesignation.text = widget.model.message!
+          .dependantIdDetails![widget.position!.toInt()].designation
+          .toString();
+
+      remarks.text = widget
+          .model.message!.dependantIdDetails![widget.position!.toInt()].remarks
+          .toString();
+
+      remainderval = widget.model.message!
+          .dependantIdDetails![widget.position!.toInt()].remainder
+          .toString();
+
+      controllerremainderdate.text = widget.model.message!
+          .dependantIdDetails![widget.position!.toInt()].remainderDate
+          .toString();
+
+      attachmentcontroller.text = widget.model.message!
+          .dependantIdDetails![widget.position!.toInt()].attachment
+          .toString();
+      attachmentURL = widget.model.message!
+          .dependantIdDetails![widget.position!.toInt()].attachment
+          .toString();
+      attachmentID = widget.model.message!
+          .dependantIdDetails![widget.position!.toInt()].attachmentID
+          .toString();
+    } else {
+      controllertypeid.text = "";
+      controllertypename.text = "";
+      controllercompanyname.text = "";
+      controllercountryissue.text = "";
+      controllerissuedate.text = "";
+      controllerexpirydate.text = "";
+      controllerdesignation.text = "";
+      remarks.text = "";
+      controllerrelationname.text = "";
+      controllerremainderdate.text = "";
+      attachmentcontroller.text = "";
+      idnumbercontroller.text = "";
+    }
+    getdocuments();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    controllertypeid.dispose();
+    controllertypename.dispose();
+    controllercompanyname.dispose();
+    controllercountryissue.dispose();
+    controllerissuedate.dispose();
+    controllerexpirydate.dispose();
+    controllerdesignation.dispose();
+    controllerrelationname.dispose();
+    remarks.dispose();
+    controllerremainderdate.dispose();
+    attachmentcontroller.dispose();
+    idnumbercontroller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        leading: IconButton(
+            icon: const Icon(CupertinoIcons.clear, color: Colors.white),
+            onPressed: () {
+              AppUtils.hideKeyboard(context);
+              Navigator.of(context).pop();
+            }),
+        title: AppUtils.buildNormalText(
+            text: "Dependents ID", color: Colors.white, fontSize: 20),
+        centerTitle: true,
+      ),
+      body: !loading
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                    child: SingleChildScrollView(
+                  child: Column(
+                    children: [getwidget()],
+                  ),
+                ))
+              ],
+            )
+          : const Center(
+              child: CupertinoActivityIndicator(
+                  radius: 30.0, color: Appcolor.twitterBlue),
+            ),
+      persistentFooterButtons: [
+        CustomButton(
+          onPressed: () {
+            if (typeNo.toString().isEmpty) {
+              AppUtils.showSingleDialogPopup(
+                  context,
+                  "Please Choose Dependent Type",
+                  "OK",
+                  onexitpopup,
+                  AssetsImageWidget.errorimage);
+            }
+            if (idnumbercontroller.text.toString().isEmpty) {
+              AppUtils.showSingleDialogPopup(context, "Please Enter ID No",
+                  "OK", onexitpopup, AssetsImageWidget.errorimage);
+            } else if (controllerrelationname.text.toString().isEmpty) {
+              AppUtils.showSingleDialogPopup(
+                  context,
+                  "Please Enter Relation Name",
+                  "OK",
+                  onexitpopup,
+                  AssetsImageWidget.errorimage);
+            } else if (controllercompanyname.text.toString().isEmpty) {
+              AppUtils.showSingleDialogPopup(
+                  context,
+                  "Please Enter Company Name",
+                  "OK",
+                  onexitpopup,
+                  AssetsImageWidget.errorimage);
+            } else if (controllercountryissue.text.toString().isEmpty) {
+              AppUtils.showSingleDialogPopup(
+                  context,
+                  "Please Enter Country Name",
+                  "OK",
+                  onexitpopup,
+                  AssetsImageWidget.errorimage);
+            } else if (controllerissuedate.text.toString().isEmpty) {
+              AppUtils.showSingleDialogPopup(context, "Please Enter Issue Date",
+                  "OK", onexitpopup, AssetsImageWidget.errorimage);
+            } else if (controllerexpirydate.text.toString().isEmpty) {
+              AppUtils.showSingleDialogPopup(context, "Please Enter Exp Date",
+                  "OK", onexitpopup, AssetsImageWidget.errorimage);
+            } else if (controllerdesignation.text.toString().isEmpty) {
+              AppUtils.showSingleDialogPopup(
+                  context,
+                  "Please Enter Designation",
+                  "OK",
+                  onexitpopup,
+                  AssetsImageWidget.errorimage);
+            } else if (remainderval.toString().isEmpty ||
+                remainderval.toString() == "null") {
+              AppUtils.showSingleDialogPopup(context, "Please Choose Remainder",
+                  "OK", onexitpopup, AssetsImageWidget.errorimage);
+            } else if (widget.iseditable == true && attachlist.isEmpty) {
+              updatedocuments(widget.model.message!
+                  .dependantIdDetails![widget.position!.toInt()].sId
+                  .toString());
+            } else if (attachmentID.isNotEmpty && attachmentURL.isNotEmpty) {
+              adddocuments();
+            } else if (widget.iseditable == true && attachlist.isNotEmpty) {
+              uploadfiles(widget.model.message!
+                  .dependantIdDetails![widget.position!.toInt()].sId
+                  .toString());
+            } else if (widget.iseditable == false && attachlist.isNotEmpty) {
+              uploadfiles("");
+            } else {
+              adddocuments();
+            }
+          },
+          name: "Submit",
+          circularvalue: 30,
+          fontSize: 14,
+        )
+      ],
+    );
+  }
+
+  Future getImageFromCamera() async {
+    final pickedFile = await picker.pickImage(source: ImageSource.camera);
+
+    if (pickedFile != null) {
+      imagefile = File(pickedFile.path);
+
+      final bytes = imagefile!.readAsBytesSync().lengthInBytes;
+      final kb = bytes / 1024;
+      final mb = kb / 1024;
+
+      Random random = Random();
+      int randomnumber = random.nextInt(100);
+
+      File imageFile = File(pickedFile.path);
+
+      Uint8List bytes0 = await imageFile.readAsBytes();
+      String base64String = base64Encode(bytes0);
+      attachmentcontroller.text = pickedFile.path.toString().split("/").last;
+      attachlist.clear();
+      print(AppConstants.getFileTypeExtension(pickedFile.path.toString()));
+      attachlist.add(AttachModel(
+          randomnumber.toString(),
+          base64String,
+          AppConstants.getFileTypeExtension(pickedFile.path.toString()) ==
+                  ".jpg"
+              ? "jpg"
+              : AppConstants.getFileTypeExtension(pickedFile.path.toString()) ==
+                      ".jpeg"
+                  ? "jpeg"
+                  : AppConstants.getFileTypeExtension(
+                      pickedFile.path.toString()),
+          pickedFile.path.toString().split("/").last,
+          mb.toStringAsFixed(3).toString()));
+
+      setState(() {});
+    } else {
+      attachlist.clear();
+      print('No image selected.');
+    }
+  }
+
+  void _pickFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      withData: true,
+      allowMultiple: false,
+      allowCompression: true,
+      allowedExtensions: [
+        'png',
+        'jpg',
+        'jpeg',
+        // 'doc',
+        // 'docx',
+        // 'xls',
+      ],
+    );
+    Random random = Random();
+    int randomnumber = random.nextInt(100);
+    if (result != null && result.files.single.path != null) {
+      PlatformFile file = result.files.first;
+
+      File file0 = File(result.files.single.path!);
+      String file64 = "";
+      setState(() async {
+        if (file.extension.toString() == "pdf") {
+          attachmentcontroller.text = file0.path;
+          final bytes = File(file0.path).readAsBytesSync();
+          file64 = base64Encode(bytes);
+        } else {
+          //Image
+          attachmentcontroller.text = file0.path.toString();
+          Uint8List bytes0 = await file0.readAsBytes();
+          file64 = base64Encode(bytes0);
+        }
+
+        attachlist.clear();
+        // print(file.name);
+        // print(file64);
+        // print(file.size);
+        // print(file.extension);
+        // print(file.path);
+
+        attachlist.add(AttachModel(randomnumber.toString(), file64,
+            file.extension, file.name, file.size.toString()));
+      });
+    } else {
+      /// User canceled the picker
+    }
+  }
+
+  void uploadfiles(sid) async {
+    var body = {
+      "attachment": [
+        {
+          "FileData": attachlist[0].fileData.toString(),
+          "FileType": attachlist[0].fileType.toString(),
+          "FileName": attachlist[0].fileName.toString()
+        }
+      ]
+    };
+    setState(() {
+      loading = true;
+    });
+    ApiService.postattachment(body).then((response) {
+      setState(() {
+        loading = false;
+      });
+      if (response.statusCode == 200) {
+        if (jsonDecode(response.body)['status'].toString() == "true") {
+          attachmentID = jsonDecode(response.body)['fileId'].toString();
+          attachmentURL = jsonDecode(response.body)['url'].toString();
+          attachlist[0].fileData = attachmentID;
+          if (widget.iseditable == true) {
+            updatedocuments(sid);
+          } else {
+            adddocuments();
+          }
+        } else {
+          AppUtils.showSingleDialogPopup(
+              context,
+              jsonDecode(response.body)['message'],
+              "Ok",
+              onexitpopup,
+              AssetsImageWidget.warningimage);
+        }
+      } else {
+        throw Exception(jsonDecode(response.body)['message'].toString());
+      }
+    }).catchError((e) {
+      setState(() {
+        loading = false;
+      });
+      AppUtils.showSingleDialogPopup(context, e.toString(), "Ok", onexitpopup,
+          AssetsImageWidget.errorimage);
+    });
+  }
+
+  Widget getwidget() {
+    return Padding(
+        padding: const EdgeInsets.all(15),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            DropdownSearch<String>(
+              popupProps: const PopupProps.menu(
+                showSearchBox: true,
+                showSelectedItems: true,
+              ),
+              items: dependentslist,
+              dropdownDecoratorProps: const DropDownDecoratorProps(
+                dropdownSearchDecoration: InputDecoration(
+                    icon: Icon(Icons.description),
+                    hintText: "ID Type",
+                    label: Text("ID Type")),
+              ),
+              onChanged: (val) {
+                for (int kk = 0; kk < documentModel.records!.length; kk++) {
+                  if (documentModel.records![kk].name.toString() == val) {
+                    typeName = documentModel.records![kk].name.toString();
+                    typeNo = documentModel.records![kk].id.toString();
+
+                    setState(() {});
+                  }
+                }
+              },
+              selectedItem: typeName,
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            TextField(
+              textCapitalization: TextCapitalization.characters,
+              controller: idnumbercontroller,
+              maxLength: 100,
+              decoration: InputDecoration(
+                counterText: '',
+                labelText: 'ID Number',
+                icon: Icon(
+                  Icons.home,
+                  color: Colors.grey.shade300,
+                ),
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            TextField(
+              textCapitalization: TextCapitalization.characters,
+              controller: controllerrelationname,
+              maxLength: 100,
+              decoration: InputDecoration(
+                counterText: '',
+                labelText: 'Relation Name',
+                icon: Icon(
+                  Icons.home,
+                  color: Colors.grey.shade300,
+                ),
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            TextField(
+              textCapitalization: TextCapitalization.characters,
+              controller: controllercompanyname,
+              maxLength: 100,
+              decoration: InputDecoration(
+                counterText: '',
+                labelText: 'Company Name',
+                icon: Icon(
+                  Icons.home,
+                  color: Colors.grey.shade300,
+                ),
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            TextField(
+              textCapitalization: TextCapitalization.characters,
+              controller: controllercountryissue,
+              maxLength: 100,
+              decoration: InputDecoration(
+                counterText: '',
+                labelText: 'Country Of Issue',
+                icon: Icon(
+                  Icons.home,
+                  color: Colors.grey.shade300,
+                ),
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            TextFormField(
+              controller: controllerissuedate,
+              maxLength: 100,
+              readOnly: true,
+              onTap: () {
+                pickerdate(controllerissuedate);
+              },
+              decoration: InputDecoration(
+                counterText: '',
+                labelText: 'Issue Date',
+                icon: Icon(Icons.join_full, color: Colors.grey.shade300),
+              ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            TextFormField(
+              controller: controllerexpirydate,
+              maxLength: 100,
+              readOnly: true,
+              onTap: () {
+                pickerdate(controllerexpirydate);
+              },
+              decoration: InputDecoration(
+                counterText: '',
+                labelText: 'Exp Date',
+                icon: Icon(Icons.join_full, color: Colors.grey.shade300),
+              ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            TextField(
+              controller: controllerdesignation,
+              maxLength: 100,
+              decoration: InputDecoration(
+                counterText: '',
+                labelText: 'Designation',
+                icon: Icon(Icons.join_full, color: Colors.grey.shade300),
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            TextField(
+              controller: remarks,
+              maxLength: 100,
+              decoration: InputDecoration(
+                counterText: '',
+                labelText: 'Remarks',
+                icon: Icon(Icons.join_full, color: Colors.grey.shade300),
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Container(
+                margin: const EdgeInsets.only(
+                  left: 35,
+                ),
+                width: double.infinity,
+                child: DropdownSearch<String>(
+                    popupProps: const PopupProps.modalBottomSheet(
+                      showSelectedItems: true,
+                    ),
+                    items: const ["true", "false"],
+                    dropdownDecoratorProps: const DropDownDecoratorProps(
+                      dropdownSearchDecoration: InputDecoration(
+                        labelText: "Remainder ",
+                        hintText: "Remainder",
+                      ),
+                    ),
+                    onChanged: (values) {
+                      remainderval = values;
+                      print(remainderval);
+                    },
+                    selectedItem: remainderval)),
+            const SizedBox(
+              height: 10,
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            TextFormField(
+              controller: controllerremainderdate,
+              maxLength: 100,
+              readOnly: true,
+              onTap: () {
+                pickerdate(controllerremainderdate);
+              },
+              decoration: InputDecoration(
+                counterText: '',
+                labelText: 'Remainder Date',
+                icon: Icon(Icons.join_full, color: Colors.grey.shade300),
+              ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            TextField(
+              readOnly: true,
+              controller: attachmentcontroller,
+              maxLength: 250,
+              decoration: InputDecoration(
+                  counterText: '',
+                  border: const UnderlineInputBorder(),
+                  icon: InkWell(
+                      onTap: () {
+                        if (widget
+                                .model
+                                .message!
+                                .dependantIdDetails![widget.position!.toInt()]
+                                .attachment
+                                .toString()
+                                .isEmpty ||
+                            widget
+                                    .model
+                                    .message!
+                                    .dependantIdDetails![
+                                        widget.position!.toInt()]
+                                    .attachment
+                                    .toString() ==
+                                "null") {
+                        } else {
+                          _launchUrl(
+                              widget
+                                  .model
+                                  .message!
+                                  .dependantIdDetails![widget.position!.toInt()]
+                                  .attachment
+                                  .toString(),
+                              isNewTab: true);
+                        }
+                      },
+                      child: Icon(Icons.visibility,
+                          color: (widget.iseditable == true &&
+                                  widget
+                                      .model
+                                      .message!
+                                      .dependantIdDetails![
+                                          widget.position!.toInt()]
+                                      .attachment
+                                      .toString()
+                                      .isEmpty)
+                              ? Colors.grey.shade300
+                              : Colors.black)),
+                  hintText: "Click here to Attach file",
+                  suffixIcon: IconButton(
+                    icon: const Icon(
+                      Icons.attach_file,
+                      color: Colors.black,
+                    ),
+                    onPressed: () async {
+                      Map<Permission, PermissionStatus> statuses = await [
+                        Permission.camera,
+                      ].request();
+                      statuses.values.forEach((element) async {
+                        if (element.isDenied || element.isPermanentlyDenied) {
+                          await openAppSettings();
+                        }
+                      });
+                      AppUtils.showBottomCupertinoDialog(context,
+                          title: "Choose any one option",
+                          btn1function: () async {
+                        AppUtils.pop(context);
+                        getImageFromCamera();
+                      }, btn2function: () {
+                        AppUtils.pop(context);
+                        _pickFile();
+                      });
+                    },
+                  )),
+              textInputAction: TextInputAction.done,
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+          ],
+        ));
+  }
+
+  void adddocuments() {
+    var json = {
+      "nsId": Prefs.getNsID('nsid'),
+      "firstName": Prefs.getFirstName(
+        SharefprefConstants.shareFirstName,
+      ),
+      "middleName": Prefs.getMiddleName(
+        SharefprefConstants.shareMiddleName,
+      ),
+      "lastName": Prefs.getLastName(
+        SharefprefConstants.sharedLastName,
+      ),
+      "type": "dependantIdDetails",
+      "idTypeNo": typeNo,
+      "idType": typeName,
+      "idNo": idnumbercontroller.text,
+      "dependantIdName": controllerrelationname.text,
+      "companyName": controllercompanyname.text,
+      "countryOfIssue": controllercountryissue.text,
+      "issueDate": controllerissuedate.text,
+      "expiryDate": controllerexpirydate.text,
+      "designation": controllerdesignation.text,
+      "remarks": remarks.text,
+      "remainder": remainderval.toString() == "true" ? true : false,
+      "remainderDate": controllerremainderdate.text,
+      "attachmentUrl": attachmentURL,
+      "attachmentID": attachmentID,
+    };
+    print(jsonEncode(json));
+    setState(() {
+      loading = true;
+    });
+    ApiService.addprofiles(json).then((response) {
+      setState(() {
+        loading = false;
+      });
+      if (response.statusCode == 200) {
+        if (jsonDecode(response.body)['status'].toString() == "true") {
+          Navigator.pop(context);
+        } else {
+          AppUtils.showSingleDialogPopup(context,
+              jsonDecode(response.body)['message'], "Ok", onexitpopup, null);
+        }
+      } else {
+        throw Exception(jsonDecode(response.body)['message'].toString());
+      }
+    }).catchError((e) {
+      setState(() {
+        loading = false;
+      });
+      AppUtils.showSingleDialogPopup(
+          context, e.toString(), "Ok", onexitpopup, null);
+    });
+  }
+
+  void pickerdate(controller) async {
+    DateTime? pickedDate = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(1900), //.subtract(Duration(days: 1)),
+        lastDate: DateTime(2100));
+    if (pickedDate != null) {
+      String formattedDate = DateFormat('yyyy-MM-dd').format(pickedDate);
+      var dateFormate =
+          DateFormat("dd/MM/yyyy").format(DateTime.parse(formattedDate));
+      controller.text = dateFormate;
+    }
+  }
+
+  void getdocuments() async {
+    setState(() {
+      loading = true;
+    });
+    try {
+      Uri baseUri = Uri.parse(
+          '${AppConstants.netSuiteapiBaseUrl}script=${AppConstants.empdocumentscriptid}&deploy=${AppConstants.empdocumentdeployid}');
+      await NetSuiteApiService.client.get(baseUri).then((response) {
+        setState(() {
+          loading = false;
+        });
+        if (response.statusCode == 200) {
+          documentModel =
+              DocumentModel.fromJson(json.decode(json.decode(response.body)));
+          dependentslist.clear();
+          for (int i = 0; i < documentModel.records!.length; i++) {
+            dependentslist.add(documentModel.records![i].name.toString());
+          }
+        } else {
+          AppUtils.showSingleDialogPopup(context,
+              json.decode(json.decode(response.body)), "Ok", onexitpopup, null);
+        }
+      });
+    } on Exception catch (_) {
+      setState(() {
+        loading = false;
+      });
+      rethrow;
+    }
+  }
+
+  void updatedocuments(String sid) {
+    var json = {
+      "type": "dependantIdDetails",
+      "nsId": Prefs.getNsID('nsid'),
+      "firstName": Prefs.getFirstName(
+        SharefprefConstants.shareFirstName,
+      ),
+      "middleName": Prefs.getMiddleName(
+        SharefprefConstants.shareMiddleName,
+      ),
+      "lastName": Prefs.getLastName(
+        SharefprefConstants.sharedLastName,
+      ),
+      "_id": sid,
+      "internalid": widget.model.message!
+          .dependantIdDetails![widget.position!.toInt()].internalid
+          .toString(),
+      "idTypeNo": typeNo,
+      "idType": typeName,
+      "idNo": idnumbercontroller.text,
+      "dependantIdName": controllerrelationname.text,
+      "companyName": controllercompanyname.text,
+      "countryOfIssue": controllercountryissue.text,
+      "issueDate": controllerissuedate.text,
+      "expiryDate": controllerexpirydate.text,
+      "designation": controllerdesignation.text,
+      "remarks": remarks.text,
+      "remainder": remainderval.toString() == "true" ? true : false,
+      "remainderDate": controllerremainderdate.text,
+      "attachmentUrl": attachmentURL,
+      "attachmentID": attachmentID,
+    };
+    print(jsonEncode(json));
+    setState(() {
+      loading = true;
+    });
+    ApiService.updatemaster(json).then((response) {
+      setState(() {
+        loading = false;
+      });
+      if (response.statusCode == 200) {
+        if (jsonDecode(response.body)['status'].toString() == "true") {
+          Navigator.pop(context);
+        } else {
+          AppUtils.showSingleDialogPopup(context,
+              jsonDecode(response.body)['message'], "Ok", onexitpopup, null);
+        }
+      } else {
+        throw Exception(jsonDecode(response.body)['message'].toString());
+      }
+    }).catchError((e) {
+      setState(() {
+        loading = false;
+      });
+      AppUtils.showSingleDialogPopup(
+          context, e.toString(), "Ok", onexitpopup, null);
+    });
+  }
+
+  void onexitpopup() {
+    Navigator.of(context).pop();
+  }
+
+  Future<void> _launchUrl(url, {bool isNewTab = true}) async {
+    if (Platform.isAndroid) {
+      if (!await launchUrl(Uri.parse(url),
+          mode: LaunchMode.externalNonBrowserApplication)) {
+        throw Exception('Could not launch $url');
+      }
+    } else if (Platform.isIOS) {
+      if (!await launchUrl(Uri.parse(url),
+          mode: LaunchMode.externalApplication)) {
+        throw Exception('Could not launch $url');
+      }
+    }
+  }
+}
