@@ -48,7 +48,7 @@ class _SplashScreenState extends State<SplashScreen> {
             Align(
               alignment: Alignment(0.0, 1.0),
               child: Text(
-                "Bindhaen ESS",
+                "Winstar ESS",
                 textAlign: TextAlign.start,
                 overflow: TextOverflow.clip,
                 style: TextStyle(

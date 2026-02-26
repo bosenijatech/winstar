@@ -204,7 +204,7 @@ class _LoginPageState extends State<LoginPage> {
 
                 // Footer
                 Text(
-                  "© 2025 Bindhaen. All rights reserved.",
+                  "© 2025 Winstar. All rights reserved.",
                   style: TextStyle(
                       fontSize: 12, color: Colors.brown.shade300, height: 1.5),
                 ),

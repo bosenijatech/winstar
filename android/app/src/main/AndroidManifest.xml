@@ -18,7 +18,7 @@
     <uses-feature android:name="android.hardware.camera" android:required="false" />
     
     <application
-        android:label="Bindhaen ESS"
+        android:label="Winstar ESS"
         android:name="${applicationName}"
          android:enableOnBackInvokedCallback="true"
          android:requestLegacyExternalStorage="true"
