@@ -1,16 +1,16 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:bindhaeness/models/bioattendancemodel.dart';
-import 'package:bindhaeness/models/dailyhistorymodel.dart';
-import 'package:bindhaeness/services/apiservice.dart';
-import 'package:bindhaeness/utils/app_utils.dart';
-import 'package:bindhaeness/utils/constants.dart';
-import 'package:bindhaeness/utils/custom_indicatoronly.dart';
-import 'package:bindhaeness/views/googlemapslocation/googlemaps.dart';
-import 'package:bindhaeness/views/overtime/overtimeentrypage.dart';
-import 'package:bindhaeness/views/widgets/assets_image_widget.dart';
-import 'package:bindhaeness/views/widgets/custom_button.dart';
+import 'package:winstar/models/bioattendancemodel.dart';
+import 'package:winstar/models/dailyhistorymodel.dart';
+import 'package:winstar/services/apiservice.dart';
+import 'package:winstar/utils/app_utils.dart';
+import 'package:winstar/utils/constants.dart';
+import 'package:winstar/utils/custom_indicatoronly.dart';
+import 'package:winstar/views/googlemapslocation/googlemaps.dart';
+import 'package:winstar/views/overtime/overtimeentrypage.dart';
+import 'package:winstar/views/widgets/assets_image_widget.dart';
+import 'package:winstar/views/widgets/custom_button.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:intl/intl.dart';
 

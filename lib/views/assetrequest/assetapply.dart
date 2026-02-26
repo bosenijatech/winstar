@@ -2,16 +2,16 @@ import 'dart:convert';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:bindhaeness/models/assetnamemodel.dart';
-import 'package:bindhaeness/models/assettypemodel.dart';
-import 'package:bindhaeness/services/apiservice.dart';
-import 'package:bindhaeness/services/pref.dart';
-import 'package:bindhaeness/utils/app_utils.dart';
-import 'package:bindhaeness/utils/appcolor.dart';
-import 'package:bindhaeness/utils/constants.dart';
-import 'package:bindhaeness/utils/netsuite/netsuiteservice.dart';
-import 'package:bindhaeness/views/widgets/assets_image_widget.dart';
-import 'package:bindhaeness/views/widgets/custom_button.dart';
+import 'package:winstar/models/assetnamemodel.dart';
+import 'package:winstar/models/assettypemodel.dart';
+import 'package:winstar/services/apiservice.dart';
+import 'package:winstar/services/pref.dart';
+import 'package:winstar/utils/app_utils.dart';
+import 'package:winstar/utils/appcolor.dart';
+import 'package:winstar/utils/constants.dart';
+import 'package:winstar/utils/netsuite/netsuiteservice.dart';
+import 'package:winstar/views/widgets/assets_image_widget.dart';
+import 'package:winstar/views/widgets/custom_button.dart';
 import 'package:intl/intl.dart';
 
 class AssetApplyPage extends StatefulWidget {

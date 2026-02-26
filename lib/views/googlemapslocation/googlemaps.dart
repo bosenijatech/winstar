@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:bindhaeness/utils/app_utils.dart';
-import 'package:bindhaeness/utils/constants.dart';
+import 'package:winstar/utils/app_utils.dart';
+import 'package:winstar/utils/constants.dart';
 import 'package:permission_handler/permission_handler.dart' as handler;
 import 'package:location/location.dart' as loca;
 

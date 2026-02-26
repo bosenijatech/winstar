@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:bindhaeness/routenames.dart';
-import 'package:bindhaeness/services/pref.dart';
-import 'package:bindhaeness/utils/app_utils.dart';
-import 'package:bindhaeness/utils/appcolor.dart';
-import 'package:bindhaeness/utils/sharedprefconstants.dart';
-import 'package:bindhaeness/views/login/loginpage.dart';
-import 'package:bindhaeness/views/widgets/custom_scaffold.dart';
-import 'package:bindhaeness/views/widgets/menuwidget.dart';
-import 'package:bindhaeness/views/widgets/notificationtitle.dart';
+import 'package:winstar/routenames.dart';
+import 'package:winstar/services/pref.dart';
+import 'package:winstar/utils/app_utils.dart';
+import 'package:winstar/utils/appcolor.dart';
+import 'package:winstar/utils/sharedprefconstants.dart';
+import 'package:winstar/views/login/loginpage.dart';
+import 'package:winstar/views/widgets/custom_scaffold.dart';
+import 'package:winstar/views/widgets/menuwidget.dart';
+import 'package:winstar/views/widgets/notificationtitle.dart';
 import 'package:flutter_settings_ui/flutter_settings_ui.dart';
 
 class NotificationPage extends StatefulWidget {

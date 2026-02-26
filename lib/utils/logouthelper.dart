@@ -1,5 +1,5 @@
-import 'package:bindhaeness/services/pref.dart';
-import 'package:bindhaeness/views/login/loginpage.dart';
+import 'package:winstar/services/pref.dart';
+import 'package:winstar/views/login/loginpage.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

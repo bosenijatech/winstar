@@ -1,8 +1,8 @@
-import 'package:bindhaeness/services/pref.dart';
-import 'package:bindhaeness/utils/netsuite/credentials.dart';
-import 'package:bindhaeness/utils/netsuite/enum/signature_method.dart';
-import 'package:bindhaeness/utils/netsuite/handlers/request_handler.dart';
-import 'package:bindhaeness/utils/netsuite/signature.dart';
+import 'package:winstar/services/pref.dart';
+import 'package:winstar/utils/netsuite/credentials.dart';
+import 'package:winstar/utils/netsuite/enum/signature_method.dart';
+import 'package:winstar/utils/netsuite/handlers/request_handler.dart';
+import 'package:winstar/utils/netsuite/signature.dart';
 import 'package:http/http.dart' as http;
 
 class OAuthHandler extends RequestHandler {

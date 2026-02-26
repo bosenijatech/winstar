@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:bindhaeness/models/error_model.dart';
-import 'package:bindhaeness/models/viewrejoinmodel.dart';
-import 'package:bindhaeness/services/apiservice.dart';
-import 'package:bindhaeness/utils/app_utils.dart';
-import 'package:bindhaeness/utils/custom_indicatoronly.dart';
-import 'package:bindhaeness/views/widgets/assets_image_widget.dart';
+import 'package:winstar/models/error_model.dart';
+import 'package:winstar/models/viewrejoinmodel.dart';
+import 'package:winstar/services/apiservice.dart';
+import 'package:winstar/utils/app_utils.dart';
+import 'package:winstar/utils/custom_indicatoronly.dart';
+import 'package:winstar/views/widgets/assets_image_widget.dart';
 
 class ViewRejoin extends StatefulWidget {
   const ViewRejoin({super.key});

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:bindhaeness/routenames.dart';
-import 'package:bindhaeness/utils/constants.dart';
-import 'package:bindhaeness/views/widgets/custom_scaffold.dart';
+import 'package:winstar/routenames.dart';
+import 'package:winstar/utils/constants.dart';
+import 'package:winstar/views/widgets/custom_scaffold.dart';
 
 class Menuspage extends StatelessWidget {
   const Menuspage({super.key});

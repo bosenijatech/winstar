@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:bindhaeness/services/pref.dart';
-import 'package:bindhaeness/utils/appcolor.dart';
-import 'package:bindhaeness/utils/sharedprefconstants.dart';
-import 'package:bindhaeness/views/leave/dummy.dart';
-import 'package:bindhaeness/views/login/loginpage.dart';
+import 'package:winstar/services/pref.dart';
+import 'package:winstar/utils/appcolor.dart';
+import 'package:winstar/utils/sharedprefconstants.dart';
+import 'package:winstar/views/leave/dummy.dart';
+import 'package:winstar/views/login/loginpage.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

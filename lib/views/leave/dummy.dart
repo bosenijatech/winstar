@@ -1,22 +1,22 @@
 import 'dart:convert';
-import 'package:bindhaeness/models/holidaymastermodel.dart';
-import 'package:bindhaeness/models/loginmodel.dart';
-import 'package:bindhaeness/services/userstatusservice.dart';
-import 'package:bindhaeness/views/payslip/viewallfiles.dart';
-import 'package:bindhaeness/views/widgets/wishthempage.dart';
+import 'package:winstar/models/holidaymastermodel.dart';
+import 'package:winstar/models/loginmodel.dart';
+import 'package:winstar/services/userstatusservice.dart';
+import 'package:winstar/views/payslip/viewallfiles.dart';
+import 'package:winstar/views/widgets/wishthempage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:bindhaeness/models/announcementmodel.dart';
-import 'package:bindhaeness/models/error_model.dart';
-import 'package:bindhaeness/models/pendingmodel.dart';
-import 'package:bindhaeness/routenames.dart';
-import 'package:bindhaeness/services/apiservice.dart';
-import 'package:bindhaeness/services/pref.dart';
-import 'package:bindhaeness/utils/app_utils.dart';
-import 'package:bindhaeness/utils/constants.dart';
-import 'package:bindhaeness/utils/sharedprefconstants.dart';
-import 'package:bindhaeness/views/widgets/assets_image_widget.dart';
+import 'package:winstar/models/announcementmodel.dart';
+import 'package:winstar/models/error_model.dart';
+import 'package:winstar/models/pendingmodel.dart';
+import 'package:winstar/routenames.dart';
+import 'package:winstar/services/apiservice.dart';
+import 'package:winstar/services/pref.dart';
+import 'package:winstar/utils/app_utils.dart';
+import 'package:winstar/utils/constants.dart';
+import 'package:winstar/utils/sharedprefconstants.dart';
+import 'package:winstar/views/widgets/assets_image_widget.dart';
 import 'package:http/http.dart' as http;
 
 class DummyScreen extends StatefulWidget {

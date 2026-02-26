@@ -1,8 +1,8 @@
-import 'package:bindhaeness/models/expensemodel.dart';
-import 'package:bindhaeness/routenames.dart';
-import 'package:bindhaeness/services/apiservice.dart';
-import 'package:bindhaeness/utils/app_utils.dart';
-import 'package:bindhaeness/views/widgets/custom_button.dart';
+import 'package:winstar/models/expensemodel.dart';
+import 'package:winstar/routenames.dart';
+import 'package:winstar/services/apiservice.dart';
+import 'package:winstar/utils/app_utils.dart';
+import 'package:winstar/views/widgets/custom_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
