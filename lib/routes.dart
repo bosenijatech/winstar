@@ -7,17 +7,17 @@ import 'package:winstar/views/attendance/view_attendance.dart';
 import 'package:winstar/views/changepassword/changepassword.dart';
 import 'package:winstar/views/dutytravel/dutytravelapply.dart';
 import 'package:winstar/views/dutytravel/dutytraveldetail.dart';
+import 'package:winstar/views/forgotpassword/forgotpassword.dart';
 import 'package:winstar/views/grievances/applygrievance.dart';
 import 'package:winstar/views/landingpage/teammets.dart';
 import 'package:winstar/views/leave/applycompoffpage.dart';
-import 'package:winstar/views/leave/dummy.dart';
+import 'package:winstar/views/leave/homepage.dart';
 import 'package:winstar/views/leave/leaveapplypage.dart';
 import 'package:winstar/views/leave/viewcompoffdetails.dart';
 import 'package:winstar/views/leave/viewleavedetails.dart';
 import 'package:winstar/views/letterpage/letterapply.dart';
 import 'package:winstar/views/letterpage/viewletterdetails.dart';
 import 'package:winstar/views/login/loginpage.dart';
-import 'package:winstar/views/overtime/overtimehistory.dart';
 import 'package:winstar/views/payslip/viewpayslip.dart';
 import 'package:winstar/views/profilepage/profilepage.dart';
 import 'package:winstar/views/reimbursement/reimburesementapply.dart';
@@ -25,10 +25,8 @@ import 'package:winstar/views/reimbursement/reimbursementdetails.dart';
 import 'package:winstar/views/rejoin/rejointab.dart';
 import 'package:winstar/views/splash.dart/splash.dart';
 
-
 class Routes {
   static Route<dynamic> generateRoutes(RouteSettings settings) {
-    final args = settings.arguments;
     switch (settings.name) {
       case (RouteNames.splashscreen):
         return MaterialPageRoute(
@@ -114,21 +112,20 @@ class Routes {
         return MaterialPageRoute(
             builder: (BuildContext context) => const ViewAttendance());
 
-      case (RouteNames.overtimehistory):
-        return MaterialPageRoute(
-            builder: (BuildContext context) => const Overtimehistory());
-
       case (RouteNames.viewprofile):
         return MaterialPageRoute(
             builder: (BuildContext context) => const ProfilePage());
 
-      case (RouteNames.viewdummy):
+      case (RouteNames.homepage):
         return MaterialPageRoute(
-            builder: (BuildContext context) => const DummyScreen());
+            builder: (BuildContext context) => const HomePage());
 
       case (RouteNames.myteam):
         return MaterialPageRoute(
             builder: (BuildContext context) => const MyTeamScreen());
+       case (RouteNames.forgotpassword):
+        return MaterialPageRoute(
+            builder: (BuildContext context) => const ForgoPasswordPage());      
       default:
         _errorRoute();
     }

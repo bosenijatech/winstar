@@ -54,7 +54,7 @@ class _LoginPageState extends State<LoginPage> {
               border: Border.all(color: Colors.white.withOpacity(0.3)),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.brown.withOpacity(0.2),
+                  color: Appcolor.primarycolor.withOpacity(0.2),
                   blurRadius: 20,
                   offset: const Offset(0, 8),
                 ),
@@ -69,14 +69,13 @@ class _LoginPageState extends State<LoginPage> {
                   width: 84,
                   height: 84,
                   decoration: BoxDecoration(
-                    color: Colors.brown.withOpacity(0.1),
+                    color: Appcolor.primarycolor.withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
                   padding: const EdgeInsets.all(10),
                   child: Image.asset(
-                    'assets/images/bindhaenlogo.png',
+                    'assets/images/nijatechlogo.png',
                     fit: BoxFit.contain,
-                    color: Colors.brown,
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -100,8 +99,8 @@ class _LoginPageState extends State<LoginPage> {
                   controller: _emailController,
                   decoration: InputDecoration(
                     hintText: "Email / Username",
-                    prefixIcon: const Icon(Icons.email_outlined,
-                        color: Color(0xFF795548)),
+                    prefixIcon: Icon(Icons.email_outlined,
+                        color: Appcolor.primarycolor),
                     filled: true,
                     fillColor: Colors.white.withOpacity(0.6),
                     border: OutlineInputBorder(
@@ -118,8 +117,8 @@ class _LoginPageState extends State<LoginPage> {
                   obscureText: _obscureText,
                   decoration: InputDecoration(
                     hintText: "Password",
-                    prefixIcon: const Icon(Icons.lock_outline,
-                        color: Color(0xFF795548)),
+                    prefixIcon:
+                        Icon(Icons.lock_outline, color: Appcolor.primarycolor),
                     filled: true,
                     fillColor: Colors.white.withOpacity(0.6),
                     border: OutlineInputBorder(
@@ -143,7 +142,9 @@ class _LoginPageState extends State<LoginPage> {
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pushNamed(context, RouteNames.forgotpassword);
+                    },
                     child: Text(
                       "Forgot Password?",
                       style: TextStyle(color: Colors.brown.shade700),
@@ -174,7 +175,7 @@ class _LoginPageState extends State<LoginPage> {
                             }
                           },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF795548),
+                      backgroundColor: Appcolor.primarycolor,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
@@ -204,7 +205,7 @@ class _LoginPageState extends State<LoginPage> {
 
                 // Footer
                 Text(
-                  "© 2025 Winstar. All rights reserved.",
+                  "© ${DateTime.now().year} Nija Ess. All rights reserved.",
                   style: TextStyle(
                       fontSize: 12, color: Colors.brown.shade300, height: 1.5),
                 ),
@@ -372,7 +373,7 @@ class _LoginPageState extends State<LoginPage> {
 
     if (context.mounted) {
       Navigator.pushNamedAndRemoveUntil(
-          context, RouteNames.viewdummy, (Route<dynamic> route) => false);
+          context, RouteNames.homepage, (Route<dynamic> route) => false);
     }
   }
 

@@ -1,5 +1,4 @@
 import 'package:winstar/models/checkcompoffmodel.dart';
-import 'package:winstar/models/holiydaymodel.dart';
 import 'package:winstar/models/leavebalancemodel.dart';
 import 'package:winstar/models/leavetypemodel.dart';
 import 'package:winstar/services/filepickerservice.dart';
@@ -158,7 +157,7 @@ class _LeaveApplyPageState extends State<LeaveApplyPage> {
               interceptCallBacks: true,
             ),
             asyncItems: (String filter) =>
-                ApiService.getleaveType(filter: filter, leavetypeid: "4"),
+                ApiService.getleaveType(filter: filter, type: "normal"),
             itemAsString: (LeaveTypeModel item) =>
                 item.leaveTypeName.toString(),
             onChanged: (LeaveTypeModel? item) async {
@@ -222,7 +221,8 @@ class _LeaveApplyPageState extends State<LeaveApplyPage> {
                       DateTime? pickedDate = await showDatePicker(
                           context: context,
                           initialDate: DateTime.now(),
-                          firstDate: DateTime.now(),
+                          firstDate:
+                              DateTime.now().subtract(const Duration(days: 30)),
                           lastDate: DateTime(2100));
 
                       if (pickedDate != null) {

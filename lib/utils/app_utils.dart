@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -7,34 +6,48 @@ import 'package:winstar/utils/appcolor.dart';
 import 'package:path_provider/path_provider.dart';
 
 class AppUtils {
-  static void hideKeyboard(context) {
+  static void hideKeyboard(BuildContext context) {
     FocusScope.of(context).requestFocus(FocusNode());
   }
 
-  static String capitalize(String value) =>
-      value.trim().length > 1 ? value.toUpperCase() : value;
+  static String capitalize(String value) {
+    final String trimmed = value.trim();
+    if (trimmed.isEmpty) return value;
+    if (trimmed.length == 1) return trimmed.toUpperCase();
+    return '${trimmed[0].toUpperCase()}${trimmed.substring(1)}';
+  }
 
-  static void showSnackbar({context, message, backgroundColor}) {
-    if (message != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: message,
-          backgroundColor: backgroundColor ?? Colors.red,
-        ),
-      );
-    }
-    Timer(const Duration(seconds: 4), () {
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    });
+  static void showSnackbar({
+    required BuildContext context,
+    required String? message,
+    Color? backgroundColor,
+    Duration duration = const Duration(seconds: 4),
+  }) {
+    if (message == null || message.trim().isEmpty) return;
+
+    final messenger = ScaffoldMessenger.of(context);
+    messenger.hideCurrentSnackBar();
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: backgroundColor ?? Colors.red,
+        duration: duration,
+      ),
+    );
   }
 
   // show dialog popup
-  static Future showSingleDialogPopup(
-      context, title, buttonname, onPressed, icons) {
-    return showDialog(
+  static Future<T?> showSingleDialogPopup<T>(
+    BuildContext context,
+    String title,
+    String buttonname,
+    VoidCallback onPressed,
+    String? icons,
+  ) {
+    return showDialog<T>(
         barrierDismissible: false,
         context: context,
-        builder: (context) {
+        builder: (dialogContext) {
           return AlertDialog(
             icon: (icons != null)
                 ? Image.asset(
@@ -42,9 +55,9 @@ class AppUtils {
                     width: 80,
                     height: 80,
                   )
-                : const Visibility(visible: false, child: Icon(null)),
+                : const SizedBox.shrink(),
             title: Text(
-              title.toString(),
+              title,
               maxLines: null,
               style: const TextStyle(fontSize: 14),
             ),
@@ -67,12 +80,18 @@ class AppUtils {
   }
 
   // show confirmation dialog
-  static Future showconfirmDialog(
-      context, title, yesstring, nostring, onPressedYes, onPressedNo) async {
-    return showDialog(
+  static Future<T?> showconfirmDialog<T>(
+    BuildContext context,
+    String title,
+    String yesstring,
+    String nostring,
+    VoidCallback onPressedYes,
+    VoidCallback onPressedNo,
+  ) async {
+    return showDialog<T>(
       context: context,
       barrierDismissible: false, // user must tap button!
-      builder: (BuildContext context) {
+      builder: (BuildContext dialogContext) {
         return AlertDialog(
           title: Text(
             title,
@@ -114,58 +133,59 @@ class AppUtils {
   //Text
   static Widget buildHeaderText({final String? text}) {
     return Text(
-      text.toString(),
+      text ?? '--',
       style: const TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
     );
   }
 
   static Widget buildNormalText(
-      {@required text,
-      color,
+      {Object? text,
+      Color? color,
       double fontSize = 12,
-      textAlign,
-      fontWeight,
-      letterSpacing,
-      wordSpacing,
-      fontFamily,
-      maxLines,
-      overflow,
-      decoration,
-      lineSpacing,
-      fontStyle}) {
+      TextAlign? textAlign,
+      FontWeight? fontWeight,
+      double? letterSpacing,
+      double? wordSpacing,
+      String? fontFamily,
+      int? maxLines,
+      TextOverflow? overflow,
+      TextDecoration? decoration,
+      double? lineSpacing,
+      FontStyle? fontStyle}) {
     return Text(
-      text ?? '--',
+      text?.toString() ?? '--',
       textAlign: textAlign ?? TextAlign.left,
       maxLines: maxLines,
       overflow: overflow,
       style: TextStyle(
           decoration: decoration ?? TextDecoration.none,
           color: color ?? Colors.black,
-          fontSize: fontSize ?? 12,
+          fontSize: fontSize,
           fontWeight: fontWeight ?? FontWeight.w400,
-          letterSpacing: letterSpacing ?? 0,
+          letterSpacing: letterSpacing ?? 0.0,
           wordSpacing: wordSpacing ?? 0.0,
-          height: lineSpacing != null ? lineSpacing + 0.0 : null,
+          fontFamily: fontFamily,
+          height: lineSpacing,
           fontStyle: fontStyle ?? FontStyle.normal),
     );
   }
 
-  static iconWithText(
-      {@required icons,
-      @required text,
-      MaterialColor? iconcolor,
-      color,
+  static Widget iconWithText(
+      {required IconData icons,
+      Object? text,
+      Color? iconcolor,
+      Color? color,
       double fontSize = 12,
-      textAlign,
-      fontWeight,
-      letterSpacing,
-      wordSpacing,
-      fontFamily,
-      maxLines,
-      overflow,
-      decoration,
-      lineSpacing,
-      fontStyle}) {
+      TextAlign? textAlign,
+      FontWeight? fontWeight,
+      double? letterSpacing,
+      double? wordSpacing,
+      String? fontFamily,
+      int? maxLines,
+      TextOverflow? overflow,
+      TextDecoration? decoration,
+      double? lineSpacing,
+      FontStyle? fontStyle}) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -177,32 +197,33 @@ class AppUtils {
           width: 5,
         ),
         Text(
-          text ?? '--',
+          text?.toString() ?? '--',
           textAlign: textAlign ?? TextAlign.left,
           maxLines: maxLines,
           overflow: overflow,
           style: TextStyle(
               decoration: decoration ?? TextDecoration.none,
               color: color ?? Colors.black,
-              fontSize: fontSize ?? 12,
+              fontSize: fontSize,
               fontWeight: fontWeight ?? FontWeight.w400,
-              letterSpacing: letterSpacing ?? 0,
+              letterSpacing: letterSpacing ?? 0.0,
               wordSpacing: wordSpacing ?? 0.0,
-              height: lineSpacing != null ? lineSpacing + 0.0 : null,
+              fontFamily: fontFamily,
+              height: lineSpacing,
               fontStyle: fontStyle ?? FontStyle.normal),
         )
       ],
     );
   }
 
-  static void showBottomCupertinoDialog(BuildContext context,
-      {@required String? title,
-      @required btn1function,
-      @required btn2function}) async {
+  static Future<void> showBottomCupertinoDialog(BuildContext context,
+      {required String? title,
+      required VoidCallback btn1function,
+      required VoidCallback btn2function}) async {
     return showCupertinoModalPopup(
       context: context,
       builder: (_) => CupertinoActionSheet(
-          title: Text(title.toString()),
+          title: Text(title ?? ''),
           actions: [
             CupertinoActionSheetAction(
                 onPressed: btn1function, child: const Text('Camera')),
@@ -219,8 +240,8 @@ class AppUtils {
     );
   }
 
-  static pop(context) {
-    Navigator.pop(context);
+  static void pop(BuildContext context, [Object? result]) {
+    Navigator.pop(context, result);
   }
 
   static Widget bottomHanger(BuildContext context) {
@@ -234,23 +255,26 @@ class AppUtils {
   }
 
   static void changeNodeFocus(BuildContext context,
-      {FocusNode? current, FocusNode? next}) {
-    current!.unfocus();
+      {required FocusNode current, FocusNode? next}) {
+    current.unfocus();
     FocusScope.of(context).requestFocus(next);
   }
 
-  static errorsnackBar(String message, BuildContext context) {
+  static ScaffoldFeatureController<SnackBar, SnackBarClosedReason>
+      errorsnackBar(String message, BuildContext context) {
     return ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(backgroundColor: Colors.red, content: Text(message)));
   }
 
-  static successsnackBar(String message, BuildContext context) {
+  static ScaffoldFeatureController<SnackBar, SnackBarClosedReason>
+      successsnackBar(String message, BuildContext context) {
     return ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(backgroundColor: Colors.green, content: Text(message)));
   }
   // average for ratings
 
   static double averageRatings(List<int> ratings) {
+    if (ratings.isEmpty) return 0;
     double avg = 0;
     for (int i = 0; i < ratings.length; i++) {
       avg += ratings[i];
@@ -261,13 +285,7 @@ class AppUtils {
   }
 
   static Widget gethanger(BuildContext context) {
-    return Center(
-        child: Container(
-      height: 5,
-      width: MediaQuery.of(context).size.width / 6,
-      decoration: BoxDecoration(
-          color: Colors.grey, borderRadius: BorderRadius.circular(100)),
-    ));
+    return bottomHanger(context);
   }
 
   static Future<String> createFolderInAppDocDir(String folderName) async {

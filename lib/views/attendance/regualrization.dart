@@ -1,29 +1,34 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
+import 'dart:io';
+import 'package:file_picker/file_picker.dart';
+import 'package:winstar/models/filemodel.dart';
 import 'package:winstar/services/apiservice.dart';
 import 'package:winstar/services/pref.dart';
 import 'package:winstar/utils/app_utils.dart';
 import 'package:winstar/utils/appcolor.dart';
+import 'package:winstar/utils/constants.dart';
 import 'package:winstar/views/widgets/assets_image_widget.dart';
 import 'package:winstar/views/widgets/custom_button.dart';
-import 'package:intl/intl.dart';
-import 'dart:io';
-import 'package:file_picker/file_picker.dart';
 
 class ApplyReqularization extends StatefulWidget {
   final String id;
   final String docdate;
-  final String fromtime;
-  final String totime;
+  final String checkIn;
+  final String checkOut;
   const ApplyReqularization(
       {super.key,
       required this.id,
       required this.docdate,
-      required this.fromtime,
-      required this.totime});
+      required this.checkIn,
+      required this.checkOut});
 
   @override
   State<ApplyReqularization> createState() => _ApplyReqularizationState();
@@ -32,6 +37,10 @@ class ApplyReqularization extends StatefulWidget {
 class _ApplyReqularizationState extends State<ApplyReqularization> {
   TextEditingController fromtimeController = TextEditingController();
   TextEditingController totimeController = TextEditingController();
+
+  TextEditingController reginController = TextEditingController();
+  TextEditingController reqoutController = TextEditingController();
+
   TextEditingController attachcontroller = TextEditingController();
   TextEditingController reasoncontroller = TextEditingController();
   TextEditingController datepickercontroller = TextEditingController();
@@ -39,18 +48,31 @@ class _ApplyReqularizationState extends State<ApplyReqularization> {
   List<String> files = [];
   List<File> filelist = [];
   List<PlatformFile>? _paths;
+
+  String attachmentID = "";
+  String attachmentURL = "";
+
+  File? imagefile;
   bool loading = false;
+  List<AttachModel> attachlist = [];
+  final picker = ImagePicker();
 
   @override
   void initState() {
     if (widget.id.toString().isEmpty) {
       fromtimeController.text = "";
       totimeController.text = "";
+      reginController.text = "";
+      reqoutController.text = "";
       datepickercontroller.text = widget.docdate;
     } else {
-      fromtimeController.text = widget.fromtime.toString();
-      // totimeController.text = widget.totime.toString();
+      fromtimeController.text = widget.checkIn.toString();
+      totimeController.text = widget.checkOut.toString();
+      print(widget.checkIn);
+      print(widget.checkOut);
       datepickercontroller.text = widget.docdate;
+      reginController.text = "";
+      reqoutController.text = "";
     }
     super.initState();
   }
@@ -61,7 +83,8 @@ class _ApplyReqularizationState extends State<ApplyReqularization> {
     totimeController.clear();
     attachcontroller.clear();
     reasoncontroller.clear();
-
+    reginController.clear();
+    reqoutController.clear();
     datepickercontroller.clear();
 
     super.dispose();
@@ -77,12 +100,13 @@ class _ApplyReqularizationState extends State<ApplyReqularization> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: AppUtils.buildNormalText(
-            text: widget.id.toString().isNotEmpty
-                ? "Reqularization Request \n  Req Date : ${widget.docdate}"
-                : "Reqularization Request",
-            color: Colors.black,
-            fontSize: 20),
-        centerTitle: true,
+          text: widget.id.toString().isNotEmpty
+              ? "Reqularization Request \n  Req Date : ${widget.docdate}"
+              : "Reqularization Request",
+          color: Colors.black,
+          fontSize: 16,
+          fontWeight: FontWeight.w700,
+        ),
       ),
       body: !loading
           ? SingleChildScrollView(
@@ -104,25 +128,61 @@ class _ApplyReqularizationState extends State<ApplyReqularization> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TextField(
-            enabled: widget.id.toString().isEmpty ? true : false,
-            readOnly: true,
-            controller: datepickercontroller,
-            maxLength: 100,
-            onTap: () async {
-              pickerdate(datepickercontroller);
-            },
-            decoration: const InputDecoration(
-              counterText: '',
-              labelText: 'Choose Date',
-            ),
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  enabled: widget.id.toString().isEmpty ? true : false,
+                  readOnly: true,
+                  controller: datepickercontroller,
+                  maxLength: 100,
+                  onTap: () async {
+                    pickerdate(datepickercontroller);
+                  },
+                  decoration: const InputDecoration(
+                    counterText: '',
+                    labelText: 'Choose Date',
+                  ),
+                ),
+              ),
+              const SizedBox(
+                width: 5,
+              ),
+              Expanded(
+                child: TextField(
+                  readOnly: true,
+                  enabled: false,
+                  controller: fromtimeController,
+                  maxLength: 100,
+                  decoration: const InputDecoration(
+                    counterText: '',
+                    labelText: 'From Time',
+                  ),
+                ),
+              ),
+              const SizedBox(
+                width: 5,
+              ),
+              Expanded(
+                child: TextField(
+                  readOnly: true,
+                  enabled: false,
+                  controller: totimeController,
+                  maxLength: 100,
+                  decoration: const InputDecoration(
+                    counterText: '',
+                    labelText: 'To Time',
+                  ),
+                ),
+              )
+            ],
           ),
           TextField(
             readOnly: true,
-            controller: fromtimeController,
+            controller: reginController,
             maxLength: 100,
             onTap: () async {
-              pickertime(fromtimeController);
+              pickertime(reginController);
             },
             decoration: const InputDecoration(
               counterText: '',
@@ -134,10 +194,10 @@ class _ApplyReqularizationState extends State<ApplyReqularization> {
           ),
           TextField(
             readOnly: true,
-            controller: totimeController,
+            controller: reqoutController,
             maxLength: 100,
             onTap: () {
-              pickertime(totimeController);
+              pickertime(reqoutController);
             },
             decoration: const InputDecoration(
               counterText: '',
@@ -146,28 +206,6 @@ class _ApplyReqularizationState extends State<ApplyReqularization> {
           ),
           const SizedBox(
             height: 10,
-          ),
-          AppUtils.buildNormalText(text: "Attachment", fontSize: 15),
-          const SizedBox(
-            height: 10,
-          ),
-          TextField(
-            readOnly: true,
-            controller: attachcontroller,
-            decoration: InputDecoration(
-              border: const UnderlineInputBorder(),
-              hintText: "Click here to Attach file",
-              suffixIcon: IconButton(
-                icon: const Icon(
-                  Icons.attach_file,
-                  color: Colors.black,
-                ),
-                onPressed: () {
-                  pickFiles();
-                },
-              ),
-            ),
-            textInputAction: TextInputAction.done,
           ),
           const SizedBox(
             height: 10,
@@ -197,13 +235,17 @@ class _ApplyReqularizationState extends State<ApplyReqularization> {
           ),
           CustomButton(
             onPressed: () {
-              if (attachcontroller.text.isEmpty) {
-                onapplyregularization();
+              if (reginController.text.isEmpty) {
+                AppUtils.showSingleDialogPopup(context,
+                    "Please Select From Time", "Ok", onexitpopup, null);
+              } else if (reqoutController.text.isEmpty) {
+                AppUtils.showSingleDialogPopup(
+                    context, "Please Select To Time", "Ok", onexitpopup, null);
               } else {
-                //uploadfiles();
+                onApplyRegularization();
               }
             },
-            name: "Apply Regularization",
+            name: "Submit",
             circularvalue: 30,
             fontSize: 14,
           )
@@ -212,64 +254,139 @@ class _ApplyReqularizationState extends State<ApplyReqularization> {
     );
   }
 
-  pickFiles() async {
-    try {
-      _paths = (await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowMultiple: false,
-        onFileLoading: (FilePickerStatus status) => print(status),
-        allowedExtensions: [
-          'png',
-          'jpg',
-          'jpeg',
-        ],
-      ))
-          ?.files;
-    } on PlatformException catch (e) {
-      print(e.toString());
-    } catch (e) {
-      print(e.toString());
-    }
+  void onexitpopup() {
+    Navigator.of(context).pop();
+  }
+
+  void onupload() async {
+    var body = {
+      "attachment": [
+        {
+          "FileData": attachlist[0].fileData.toString(),
+          "FileType": attachlist[0].fileType.toString(),
+          "FileName": attachlist[0].fileName.toString()
+        }
+      ]
+    };
     setState(() {
-      if (_paths != null) {
-        _paths!.clear();
+      loading = true;
+    });
 
-        files.add(_paths!.first.path.toString());
-
-        attachcontroller.text = _paths!.first.name;
+    ApiService.postattachment(body).then((response) {
+      setState(() {
+        loading = false;
+      });
+      if (response.statusCode == 200) {
+        if (jsonDecode(response.body)['status'].toString() == "true") {
+          attachmentID = jsonDecode(response.body)['fileId'].toString();
+          attachmentURL = jsonDecode(response.body)['url'].toString();
+          attachlist[0].fileData = attachmentID;
+          onApplyRegularization();
+        } else {
+          AppUtils.showSingleDialogPopup(
+              context,
+              jsonDecode(response.body)['message'],
+              "Ok",
+              onexitpopup,
+              AssetsImageWidget.warningimage);
+        }
+      } else {
+        throw Exception(jsonDecode(response.body)['message'].toString());
       }
+    }).catchError((e) {
+      setState(() {
+        loading = false;
+      });
+      AppUtils.showSingleDialogPopup(context, e.toString(), "Ok", onexitpopup,
+          AssetsImageWidget.errorimage);
     });
   }
 
-  // Future uploadfiles() async {
-  //   setState(() {
-  //     loading = true;
-  //   });
-  //   Uri url;
-  //   url = Uri.parse(AppConstants.LIVE_URL + AppConstants.uploadfiles);
+  Future getImageFromCamera() async {
+    final pickedFile = await picker.pickImage(source: ImageSource.camera);
 
-  //   var request = http.MultipartRequest('POST', url);
-  //   for (int i = 0; i < files.length; i++) {
-  //     request.files.add(await http.MultipartFile.fromPath('files', files[i]));
-  //   }
+    if (pickedFile != null) {
+      imagefile = File(pickedFile.path);
 
-  //   http.StreamedResponse response = await request.send();
-  //   response.stream.transform(utf8.decoder).listen((value) {
-  //     setState(() {
-  //       loading = false;
-  //     });
-  //     if (response.statusCode == 200) {
-  //       var imagename2 = "";
-  //       List<dynamic> list = json.decode(value);
-  //       imagename2 = list[0]["filename"];
-  //       var camfilepath = list[0]["path"];
-  //       onapplyregularization();
-  //     }
-  //   });
-  //   setState(() {
-  //     loading = false;
-  //   });
-  // }
+      final bytes = imagefile!.readAsBytesSync().lengthInBytes;
+      final kb = bytes / 1024;
+      final mb = kb / 1024;
+
+      Random random = Random();
+      int randomnumber = random.nextInt(100);
+
+      File imageFile = File(pickedFile.path);
+
+      Uint8List bytes0 = await imageFile.readAsBytes();
+      String base64String = base64Encode(bytes0);
+      attachcontroller.text = pickedFile.path.toString().split("/").last;
+      attachlist.clear();
+      print(AppConstants.getFileTypeExtension(pickedFile.path.toString()));
+      attachlist.add(AttachModel(
+          randomnumber.toString(),
+          base64String,
+          AppConstants.getFileTypeExtension(pickedFile.path.toString()) ==
+                  ".jpg"
+              ? "jpg"
+              : AppConstants.getFileTypeExtension(pickedFile.path.toString()) ==
+                      ".jpeg"
+                  ? "jpeg"
+                  : AppConstants.getFileTypeExtension(
+                      pickedFile.path.toString()),
+          pickedFile.path.toString().split("/").last,
+          mb.toStringAsFixed(3).toString()));
+
+      setState(() {});
+    } else {
+      attachlist.clear();
+      print('No image selected.');
+    }
+  }
+
+  void _pickFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      withData: true,
+      allowMultiple: false,
+      allowCompression: true,
+      allowedExtensions: [
+        'png',
+        'jpg',
+        'jpeg',
+        'pdf',
+        // 'doc',
+        // 'docx',
+        // 'xls',
+      ],
+    );
+    Random random = Random();
+    int randomnumber = random.nextInt(100);
+    if (result != null && result.files.single.path != null) {
+      PlatformFile file = result.files.first;
+
+      File file0 = File(result.files.single.path!);
+      String file64 = "";
+      setState(() async {
+        if (file.extension.toString() == "pdf") {
+          attachcontroller.text = file0.path;
+          final bytes = File(file0.path).readAsBytesSync();
+          file64 = base64Encode(bytes);
+        } else {
+          //Image
+          attachcontroller.text = file0.path.toString();
+          Uint8List bytes0 = await file0.readAsBytes();
+          file64 = base64Encode(bytes0);
+        }
+
+        attachlist.clear();
+
+        attachlist.add(AttachModel(randomnumber.toString(), file64,
+            file.extension, file.name, file.size.toString()));
+      });
+    } else {
+      /// User canceled the picker
+    }
+  }
 
   void pickerdate(controller) async {
     DateTime? pickedDate = await showDatePicker(
@@ -294,23 +411,24 @@ class _ApplyReqularizationState extends State<ApplyReqularization> {
     TimeOfDay? pickedTime = await showTimePicker(
       initialTime: TimeOfDay.now(),
       context: context,
-      // builder: (context, child) {
-      //   return MediaQuery(
-      //     data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
-      //     child: child ?? Container(),
-      //   );
-      // },
     );
-
     if (pickedTime != null) {
       setState(() {
-        var df = DateFormat("h:mm a");
-        var dt = df.parse(pickedTime.format(context));
-        print(DateFormat('HH:mm:ss').format(dt));
-        controller.text = DateFormat('HH:mm:ss').format(dt);
-        if (fromtimeController.text.isEmpty && totimeController.text.isEmpty) {
-        } else {
-          validatetiming(fromtimeController.text, totimeController.text);
+        final now = DateTime.now();
+        final dt = DateTime(
+          now.year,
+          now.month,
+          now.day,
+          pickedTime.hour,
+          pickedTime.minute,
+        );
+
+        final formatted = DateFormat('hh:mm a').format(dt);
+        print(formatted);
+        controller.text = formatted;
+        if (reginController.text.isNotEmpty ||
+            reqoutController.text.isNotEmpty) {
+          validatetiming(reginController.text, reqoutController.text);
         }
       });
     } else {
@@ -319,7 +437,7 @@ class _ApplyReqularizationState extends State<ApplyReqularization> {
   }
 
   validatetiming(String starttime, String endtime) {
-    var format = DateFormat("HH:mm:ss");
+    var format = DateFormat("hh:mm a");
     var start = format.parse(starttime);
     var end = format.parse(endtime);
 
@@ -338,25 +456,27 @@ class _ApplyReqularizationState extends State<ApplyReqularization> {
     }
   }
 
-  void onapplyregularization() async {
-    String mobilecurrentdatetime =
-        DateFormat("yyyy-MM-dd HH:mm:ss").format(DateTime.now());
+  String convertFormat(String date) {
+    if (date.isEmpty) return "";
 
+    DateTime parsedDate = DateFormat("yyyy/MM/dd").parse(date);
+    return DateFormat("dd/MM/yyyy").format(parsedDate);
+  }
+
+  void onApplyRegularization() async {
+    String cdate = DateFormat("dd/MM/yyyy").format(DateTime.now());
     var json = {
-      "refno": widget.id,
-      "fromtime": fromtimeController.text.toString(),
-      "totime": totimeController.text.toString(),
-      "regularizationdate": datepickercontroller.text,
-      "attachment": "",
-      "remarks": reasoncontroller.text.toString(),
-      "source": "Mob",
-      "nsId": Prefs.getNsID('nsid'),
-      "createdbyName": Prefs.getFullName("Name"),
-      "emp_code": Prefs.getEmpID('empID'),
-      "emp_name": Prefs.getFullName('Name'),
-      "createdDate": mobilecurrentdatetime,
+      "attendanceInternalId": widget.id,
+      "employeeId": Prefs.getNsID('nsid'),
+      "employeeName": Prefs.getFullName("Name"),
+      "date": datepickercontroller.text,
+      "regDate": cdate,
+      "intime": widget.checkIn,
+      "outtime": widget.checkOut,
+      "regIn": reginController.text,
+      "regOut": reqoutController.text,
+      "remarks": reasoncontroller.text
     };
-    print(jsonEncode(json));
 
     setState(() {
       loading = true;
@@ -393,10 +513,6 @@ class _ApplyReqularizationState extends State<ApplyReqularization> {
       AppUtils.showSingleDialogPopup(context, e.toString(), "Ok", onexitpopup,
           AssetsImageWidget.errorimage);
     });
-  }
-
-  void onexitpopup() {
-    Navigator.of(context).pop();
   }
 
   void onclearvalues() {

@@ -158,7 +158,7 @@ class _CompOffApplyPageState extends State<CompOffApplyPage> {
               interceptCallBacks: true,
             ),
             asyncItems: (String filter) =>
-                ApiService.getleaveType(filter: filter, leavetypeid: "4"),
+                ApiService.getleaveTypeComp("compoff"),
             itemAsString: (LeaveTypeModel item) =>
                 item.leaveTypeName.toString(),
             onChanged: (LeaveTypeModel? item) async {

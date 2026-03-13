@@ -1,30 +1,30 @@
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:mime/mime.dart';
 
 class AppConstants {
-  static String apiBaseUrl = 'https://mobapp.nijatech.com:5606/';
-  //static String apiBaseUrl = 'http://192.168.0.101:4000/';
+  static String apiBaseUrl = 'https://mobapp.nijatech.com:6000/';
 
   static const String androidAppPackageName = "com.nijatech.winstar";
   static const String iOSAppID = "6738953923";
 
   static const String netSuiteapiBaseUrl =
-      'https://11290313-sb1.restlets.api.netsuite.com/app/site/hosting/restlet.nl?';
+      'https://11906425.restlets.api.netsuite.com/app/site/hosting/restlet.nl?';
 
   static List<Map<String, dynamic>> categories = [
-    {"icon": "assets/icons/leaveicon.svg", "text": "Leave Request"},
-    {"icon": "assets/icons/leaveicon.svg", "text": "Comp Off Request"},
-    {"icon": "assets/icons/lettericon.svg", "text": "Letter request"},
-    // {"icon": "assets/icons/travelrequest.svg", "text": "Travel request"},
-    {"icon": "assets/icons/payslip.svg", "text": "Payslip"},
-    // {"icon": "assets/icons/assets.svg", "text": "Asset Request"},
-    // {"icon": "assets/icons/rejoin.svg", "text": "Rejoin Request"},
-    //  {"icon": "assets/icons/expenseclaim.svg", "text": "Expense Claim"},
-    //{"icon": "assets/icons/grievance.svg", "text": "Grievance"},
+    {"icon": Icons.location_on_outlined, "text": "Attendance"},
+    {"icon": Icons.leave_bags_at_home, "text": "Regularization"},
+    {"icon": Icons.flight_takeoff, "text": "Leave Request"},
+    {"icon": Icons.flight_takeoff, "text": "Comp Off Request"},
+    {"icon": Icons.edit_document, "text": "Letter request"},
+    {"icon": Icons.payment, "text": "Payslip"},
+    {"icon": Icons.assessment, "text": "Asset Request"},
+    {"icon": Icons.join_full, "text": "Rejoin Request"},
+    {"icon": Icons.person, "text": "Profile"},
   ];
 
   static convertdateformat(from) {

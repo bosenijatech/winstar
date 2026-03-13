@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:winstar/services/apiservice.dart';
-import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -21,25 +20,24 @@ class ViewPaySlipPage extends StatefulWidget {
 }
 
 class _ViewPaySlipPageState extends State<ViewPaySlipPage> {
-  final yearKey = GlobalKey<DropdownSearchState<YearModel>>();
   final now = DateTime.now();
   bool loading = false;
   String? selectedYear;
   PaySlipModel? paySlipModel;
   YearModel? selectedYearModel;
+  List<YearModel> years = [];
   @override
   void initState() {
     selectedYearModel =
         YearModel(name: now.year.toString(), id: "1", inactive: false);
     selectedYear = now.year.toString();
     getPayslip(selectedYear.toString());
+    fetchYears();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
@@ -62,7 +60,7 @@ class _ViewPaySlipPageState extends State<ViewPaySlipPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // 🎯 Year Dropdown
+                  // 🎯 Year Selection Chips
                   Text(
                     "Select Year",
                     style: TextStyle(
@@ -72,49 +70,38 @@ class _ViewPaySlipPageState extends State<ViewPaySlipPage> {
                   ),
                   const SizedBox(height: 8),
 
-                  DropdownSearch<YearModel>(
-                    selectedItem: selectedYearModel,
-                    key: yearKey,
-                    popupProps: PopupProps.menu(
-                      showSearchBox: true,
-                      interceptCallBacks: true, //important line
-                      itemBuilder: (ctx, item, isSelected) {
-                        return ListTile(
-                            selected: isSelected,
-                            title: Text(
-                              item.name.toString(),
-                            ),
-                            onTap: () {
-                              yearKey.currentState?.popupValidate([item]);
-                              selectedYear = item.name;
-                              selectedYearModel = item;
-                              getPayslip(selectedYearModel?.name ?? "");
-                              setState(() {});
-                            });
-                      },
+                  if (years.isEmpty)
+                    const Center(child: CircularProgressIndicator())
+                  else
+                    Wrap(
+                      spacing: 8.0,
+                      runSpacing: 4.0,
+                      children: years
+                          .map((year) => ChoiceChip(
+                                label: Text(
+                                  year.name,
+                                  style: TextStyle(
+                                    color: selectedYearModel?.id == year.id
+                                        ? Colors.white
+                                        : Colors.black,
+                                  ),
+                                ),
+                                selected: selectedYearModel?.id == year.id,
+                                selectedColor: Colors.deepPurple,
+                                checkmarkColor: Colors.white,
+                                backgroundColor: Colors.grey[200],
+                                onSelected: (bool selected) {
+                                  if (selected) {
+                                    setState(() {
+                                      selectedYearModel = year;
+                                      selectedYear = year.name;
+                                    });
+                                    getPayslip(year.name);
+                                  }
+                                },
+                              ))
+                          .toList(),
                     ),
-                    asyncItems: (String filter) => ApiService.getyearModel(
-                      filter: filter,
-                    ),
-                    itemAsString: (YearModel item) => item.name.toString(),
-                    dropdownDecoratorProps: DropDownDecoratorProps(
-                      dropdownSearchDecoration: InputDecoration(
-                        contentPadding:
-                            const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
-                        hintText: 'Year * ',
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(1),
-                          borderSide:
-                              const BorderSide(color: Colors.grey, width: 1),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(1),
-                          borderSide:
-                              const BorderSide(color: Colors.grey, width: 1),
-                        ),
-                      ),
-                    ),
-                  ),
                   const SizedBox(height: 20),
 
                   // 🧾 Payslip List
@@ -147,59 +134,89 @@ class _ViewPaySlipPageState extends State<ViewPaySlipPage> {
 
   // 🪄 Beautiful Payslip Card
   Widget _buildPayslipCard(String month, String pdfUrl) {
-    return Card(
-      elevation: 3,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: ListTile(
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        leading: Container(
-          decoration: BoxDecoration(
-            color: Colors.deepPurple.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(12),
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 5,
+            offset: const Offset(0, 2),
           ),
-          padding: const EdgeInsets.all(10),
-          child: const Icon(
-            Icons.picture_as_pdf_rounded,
-            color: Colors.deepPurple,
-            size: 28,
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.deepPurple.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            padding: const EdgeInsets.all(12),
+            child: const Icon(
+              Icons.picture_as_pdf_rounded,
+              color: Colors.deepPurple,
+              size: 32,
+            ),
           ),
-        ),
-        title: Text(
-          month,
-          style: const TextStyle(
-              fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black87),
-        ),
-        subtitle: Text(
-          selectedYear ?? "",
-          style: TextStyle(color: Colors.grey[600], fontSize: 13),
-        ),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(
-              tooltip: "View Payslip",
-              icon:
-                  const Icon(CupertinoIcons.eye_fill, color: Colors.deepPurple),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ViewPdf(pdfurl: pdfUrl),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  month,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    color: Colors.black87,
                   ),
-                );
-              },
+                ),
+                Text(
+                  selectedYear ?? "",
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                    fontSize: 14,
+                  ),
+                ),
+              ],
             ),
-            IconButton(
-              tooltip: "Download",
-              icon: const Icon(CupertinoIcons.arrow_down_circle_fill,
-                  color: Colors.green),
-              onPressed: () {
-                _launchUrl(Uri.parse(pdfUrl));
-              },
-            ),
-          ],
-        ),
+          ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                tooltip: "View Payslip",
+                icon: const Icon(
+                  CupertinoIcons.eye_fill,
+                  color: Colors.deepPurple,
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ViewPdf(pdfurl: pdfUrl),
+                    ),
+                  );
+                },
+              ),
+              IconButton(
+                tooltip: "Download",
+                icon: const Icon(
+                  CupertinoIcons.arrow_down_circle_fill,
+                  color: Colors.green,
+                ),
+                onPressed: () {
+                  _launchUrl(Uri.parse(pdfUrl));
+                },
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -254,19 +271,23 @@ class _ViewPaySlipPageState extends State<ViewPaySlipPage> {
         Prefs.getNsID(SharefprefConstants.sharednsid).toString();
 
     setState(() => loading = true);
+
     var body = {
       "employeeId": employeeId,
       "year": year,
     };
+
     try {
       final response = await ApiService.viewPayslip(body);
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonResponse = json.decode(response.body);
+
         print("Payslip API Response: $jsonResponse");
 
-        if (jsonResponse['Status'] == true) {
-          final List<dynamic> employeeList = jsonResponse['Data'] ?? [];
+        if (jsonResponse['success'] == true) {
+          final List<dynamic> employeeList = jsonResponse['payload'] ?? [];
+
           final matchedEmployee = employeeList.firstWhere(
             (e) => e['employeeId'].toString() == employeeId,
             orElse: () => null,
@@ -275,10 +296,10 @@ class _ViewPaySlipPageState extends State<ViewPaySlipPage> {
           setState(() {
             paySlipModel = matchedEmployee != null
                 ? PaySlipModel.fromJson({
-                    ...jsonResponse,
-                    'Data': [matchedEmployee],
+                    "Data": [matchedEmployee],
                   })
                 : null;
+
             loading = false;
           });
         } else {
@@ -294,6 +315,25 @@ class _ViewPaySlipPageState extends State<ViewPaySlipPage> {
     } catch (e) {
       print("Exception in getPayslip: $e");
       setState(() => loading = false);
+    }
+  }
+
+  // Fetch Years
+  Future<void> fetchYears() async {
+    try {
+      years = await ApiService.getyearModel(filter: "");
+      // Set selected to current year if available
+      final currentYear = now.year.toString();
+      selectedYearModel = years.firstWhere(
+        (year) => year.name == currentYear,
+        orElse: () => years.isNotEmpty
+            ? years.first
+            : YearModel(name: currentYear, id: "1", inactive: false),
+      );
+      selectedYear = selectedYearModel?.name ?? currentYear;
+      setState(() {});
+    } catch (e) {
+      print("Error fetching years: $e");
     }
   }
 }

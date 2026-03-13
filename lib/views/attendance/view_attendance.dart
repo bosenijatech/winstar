@@ -1,17 +1,16 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:winstar/models/viewattendancemodelnew.dart';
+import 'package:intl/intl.dart';
+import 'package:winstar/models/viewattendancemodel.dart';
+import 'package:winstar/models/viewleavemodel.dart';
 import 'package:winstar/services/apiservice.dart';
 import 'package:winstar/services/pref.dart';
 import 'package:winstar/utils/app_utils.dart';
-import 'package:winstar/utils/constants.dart';
 import 'package:winstar/utils/custom_indicatoronly.dart';
 import 'package:winstar/utils/sharedprefconstants.dart';
-import 'package:winstar/views/attendance/menutype.dart';
 import 'package:winstar/views/attendance/regualrization.dart';
 import 'package:winstar/views/widgets/assets_image_widget.dart';
-import 'package:intl/intl.dart';
 
 class ViewAttendance extends StatefulWidget {
   const ViewAttendance({super.key});
@@ -21,12 +20,11 @@ class ViewAttendance extends StatefulWidget {
 }
 
 class _ViewAttendanceState extends State<ViewAttendance> {
-  //ViewAttendanceModel viewModel = ViewAttendanceModel();
-  ViewAttendanceModelNew viewModel = ViewAttendanceModelNew();
+  List<ViewAttendanceModel> viewModel = [];
   bool loading = false;
   @override
   void initState() {
-    getattendancecheckdata();
+    getOneMonthAttendance();
     super.initState();
   }
 
@@ -35,24 +33,18 @@ class _ViewAttendanceState extends State<ViewAttendance> {
     return Scaffold(
         appBar: AppBar(
           elevation: 0,
+          backgroundColor: Colors.white,
           leading: IconButton(
-            icon: const Icon(CupertinoIcons.back, color: Colors.white),
+            icon: const Icon(CupertinoIcons.back, color: Colors.black),
             onPressed: () => Navigator.of(context).pop(),
           ),
           title: AppUtils.buildNormalText(
-              text: "View Attendance - Logs ",
-              color: Colors.white,
-              fontSize: 16),
-          actions: const [
-            // Padding(
-            //     padding:
-            //         const EdgeInsets.symmetric(vertical: 8.0, horizontal: 5),
-            //     child: GestureDetector(
-            //         child: const Icon(Icons.more_vert),
-            //         onTapDown: (details) {
-            //           _showPopUpMenu(details.globalPosition);
-            //         }))
-          ],
+            text: "View Attendance - Log",
+            color: Colors.black,
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+          ),
+          actions: const [],
         ),
         body: !loading
             ? SingleChildScrollView(
@@ -82,303 +74,265 @@ class _ViewAttendanceState extends State<ViewAttendance> {
                 border: Border.all(color: const Color(0xffFFB74D))),
             child: AppUtils.buildNormalText(
                 text:
-                    "You're at the start of the page! only 1 months of data can be viewed.",
+                    "You are at the start of the page. Only current month data is available.",
                 fontSize: 12,
                 lineSpacing: 2,
-                color: const Color(0xffFF9800)),
+                color: Colors.black),
           ),
         ],
       ),
     );
   }
 
-  _showPopUpMenu(Offset offset) async {
-    final screenSize = MediaQuery.of(context).size;
-    double left = offset.dx;
-    double top = offset.dy;
-    double right = screenSize.width - offset.dx;
-    double bottom = screenSize.height - offset.dy;
-
-    await showMenu<MenuItemType>(
-      context: context,
-      position: RelativeRect.fromLTRB(left, top, right, bottom),
-      items: MenuItemType.values
-          .map((MenuItemType menuItemType) => PopupMenuItem<MenuItemType>(
-                value: menuItemType,
-                child: Text(getMenuItemString(menuItemType)),
-              ))
-          .toList(),
-    ).then((item) {
-      if (item == MenuItemType.ApplyLeave) {
-        Navigator.pushNamed(context, '/leaveapply');
-      } else if (item == MenuItemType.ApplyRegularization) {
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //       builder: (context) => const ApplyReqularization(
-        //             id: "",
-        //             fromtime: "",
-        //             totime: "",
-        //             docdate: "",
-        //           )),
-        // ).then((_) => getattendancecheckdata());
-      }
-    });
-  }
-
   Widget detailpage() {
-    return viewModel.message != null
-        ? ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: viewModel.message!.length ?? 0,
-            itemBuilder: (BuildContext context, int index) {
-              return InkWell(
-                onTap: () {
-                  var uniqid = "";
-                  // for (int j = 0; j < viewModel.message!.length; j++) {
-                  //   for (int k = 0;
-                  //       k < viewModel.message![j].log!.length;
-                  //       k++) {
-                  //     if (viewModel.message![j].log![k].checkouttime!.isEmpty) {
-                  //       uniqid = viewModel.message![j].log![k].detailuniqid
-                  //           .toString();
-                  //     }
-                  //   }
-                  // }
-                  uniqid = viewModel.message![index].log!.first.detailuniqid
-                      .toString();
-                  print(uniqid);
+    if (viewModel.isEmpty) {
+      return const Center(child: Text("No Data"));
+    }
+
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: viewModel.length,
+      itemBuilder: (BuildContext context, int index) {
+        final item = viewModel[index];
+
+        final bool isRegularized = item.isRegularized ?? false;
+        final bool isOutMissing = item.checkOut!.isEmpty;
+
+        return InkWell(
+          onTap: (!isRegularized && isWithin3Days(item.date ?? ""))
+              ? () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => ApplyReqularization(
-                              id: uniqid,
-                              fromtime: viewModel
-                                  .message![index].log!.first.checkintime
-                                  .toString()
-                                  .substring(11),
-                              totime: "",
-                              docdate: viewModel.message![index].sId.toString(),
-                            )),
-                  ).then((_) => getattendancecheckdata());
-                },
-                child: Container(
-                  margin: const EdgeInsets.all(10),
-                  padding:
-                      const EdgeInsets.only(left: 10, right: 10, bottom: 3),
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.grey.shade400,
-                        width: 0.5,
+                      builder: (context) => ApplyReqularization(
+                        id: item.internalId.toString(),
+                        checkIn: item.checkIn.toString().isNotEmpty
+                            ? item.checkIn.toString()
+                            : "",
+                        checkOut: item.checkOut.toString().isNotEmpty
+                            ? item.checkOut.toString()
+                            : "",
+                        docdate: item.date.toString(),
                       ),
-                      borderRadius: const BorderRadius.all(
-                        Radius.circular(10),
-                      ),
-                      color: Colors.white),
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            AppUtils.buildNormalText(
-                                text: AppConstants.changeddmmyyformat(
-                                    viewModel.message![index].sId.toString()),
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold),
-                            Container(
-                              margin: const EdgeInsets.all(5.0),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 5.0, vertical: 5.0),
-                              decoration: BoxDecoration(
-                                color: Colors.green.shade50,
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(5)),
-                                border: Border.all(color: Colors.green),
+                    ),
+                  ).then((_) => getOneMonthAttendance());
+                }
+              : null,
+          child: Container(
+            margin: const EdgeInsets.all(10),
+            padding:
+                const EdgeInsets.only(left: 10, right: 10, bottom: 10, top: 10),
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: Colors.grey.shade400,
+                width: 0.5,
+              ),
+              borderRadius: const BorderRadius.all(
+                Radius.circular(10),
+              ),
+              color: Colors.white,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // 🔹 Date & Status
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    AppUtils.buildNormalText(
+                      text: item.date ?? "",
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    (isRegularized)
+                        ? Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: (!isRegularized)
+                                  ? Colors.orange.shade50
+                                  : Colors.green.shade50,
+                              borderRadius: BorderRadius.circular(5),
+                              border: Border.all(
+                                color: (!isRegularized)
+                                    ? Colors.orange
+                                    : Colors.green,
                               ),
-                              child: AppUtils.buildNormalText(
-                                  text: "On Time",
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold),
-                            )
-                          ],
-                        ),
-                        AppUtils.buildNormalText(
-                            text: Prefs.getShiftName(
-                              SharefprefConstants.sharedshiftName,
                             ),
-                            fontSize: 12),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        const Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text("Check In",
-                                style: TextStyle(color: Colors.black54)),
-                            Text("Check out",
-                                style: TextStyle(color: Colors.black54)),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            viewModel.message![index].log!.last.checkouttime!
-                                    .toString()
-                                    .isEmpty
-                                ? Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 3.0, vertical: 2.0),
-                                    decoration: BoxDecoration(
-                                        color: Colors.red.shade50,
-                                        borderRadius: const BorderRadius.all(
-                                            Radius.circular(5)),
-                                        border: Border.all(color: Colors.red)),
-                                    child: AppUtils.buildNormalText(
-                                        text: "SWIPE(S) MISSING!",
-                                        color: Colors.red))
-                                : Container(),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                                viewModel.message![index].log!.first.checkintime
-                                    .toString()
-                                    .substring(11),
-                                style: const TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold)),
-                            Text(
-                                viewModel.message![index].log!.last
-                                        .checkouttime!.isNotEmpty
-                                    ? viewModel
-                                        .message![index].log!.last.checkouttime!
-                                        .toString()
-                                        .substring(11)
-                                    : "--:--",
-                                style: const TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold)),
-                          ],
-                        ),
-                        const SizedBox(height: 5),
-                        viewModel.message![index].purpose!.isNotEmpty
-                            ? Center(
-                                child: Container(
-                                  margin: const EdgeInsets.all(3.0),
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 5.0, vertical: 5.0),
-                                  decoration: BoxDecoration(
-                                    color: Colors.green.shade50,
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(3)),
-                                    border: Border.all(color: Colors.green),
-                                  ),
-                                  child: AppUtils.buildNormalText(
-                                      text: viewModel.message![index].purpose
-                                          .toString(),
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.normal),
-                                ),
-                              )
-                            : Container(),
-                        Divider(
-                          color: Colors.grey.shade300,
-                        ),
-                        const SizedBox(height: 5),
-                        viewModel.message![index].log!.last.checkouttime!
-                                .toString()
-                                .isEmpty
-                            ? Center(
-                                child: AppUtils.buildNormalText(
-                                    text:
-                                        "Please click to Checkout to apply regularization!",
-                                    color: Colors.grey.shade500),
-                              )
-                            : Container(),
-                        const SizedBox(height: 5),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: (viewModel.message![index].log!.first
-                                          .checkintime!.isNotEmpty &&
-                                      viewModel.message![index].log!.last
-                                          .checkouttime!.isNotEmpty)
-                                  ? AppUtils.buildNormalText(
-                                      text: checkeffectivehours(
-                                        viewModel.message![index].log!.first
-                                            .checkintime!
-                                            .substring(11)
-                                            .toString(),
-                                        viewModel.message![index].log!.last
-                                            .checkouttime!
-                                            .substring(11)
-                                            .toString(),
-                                        0,
-                                      ),
-                                      fontSize: 10,
-                                    )
-                                  : Container(),
+                            child: AppUtils.buildNormalText(
+                              text: "Reqularization Applied",
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
                             ),
-                            Expanded(
-                              child: (viewModel.message![index].log!.first
-                                          .checkintime!.isNotEmpty &&
-                                      viewModel.message![index].log!.last
-                                          .checkouttime!.isNotEmpty)
-                                  ? AppUtils.buildNormalText(
-                                      text: checkeffectivehours(
-                                        viewModel.message![index].log!.first
-                                            .checkintime!
-                                            .substring(11)
-                                            .toString(),
-                                        viewModel.message![index].log!.last
-                                            .checkouttime!
-                                            .substring(11)
-                                            .toString(),
-                                        0,
-                                      ),
-                                      fontSize: 10,
-                                    )
-                                  : Container(),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 5),
-                      ]),
+                          )
+                        : const SizedBox.shrink()
+                  ],
                 ),
-              );
-            },
-          )
-        : const Center(
-            child: Text('No Data'),
-          );
+
+                const SizedBox(height: 10),
+
+                // 🔹 Shift Name
+                AppUtils.buildNormalText(
+                  text: Prefs.getShiftName(
+                    SharefprefConstants.sharedshiftName,
+                  ),
+                  fontSize: 12,
+                ),
+
+                const SizedBox(height: 10),
+
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("Check In", style: TextStyle(color: Colors.black54)),
+                    Text("Check Out", style: TextStyle(color: Colors.black54)),
+                  ],
+                ),
+
+                const SizedBox(height: 5),
+
+                // 🔹 Times
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      item.checkIn.toString().isNotEmpty
+                          ? item.checkIn!
+                          : "--:--",
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      item.checkOut!.isNotEmpty ? item.checkOut! : "--:--",
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 10),
+
+                // 🔹 Effective Hours
+                if (item.checkIn!.isNotEmpty && item.checkOut!.isNotEmpty)
+                  AppUtils.buildNormalText(
+                    text: checkeffectivehours(
+                      item.checkIn!,
+                      item.checkOut!,
+                      0,
+                    ),
+                    fontSize: 11,
+                  ),
+
+                const SizedBox(height: 5),
+
+                // 🔹 Regularization Hint
+                if (!isRegularized)
+                  Center(
+                    child: AppUtils.buildNormalText(
+                      text: "Tap here to apply regularization",
+                      color: Colors.orange,
+                      fontSize: 11,
+                    ),
+                  ),
+                isRegularized
+                    ? const Divider(
+                        color: Colors.grey,
+                        thickness: 0.5,
+                      )
+                    : const SizedBox.shrink(),
+                isRegularized
+                    ? Column(
+                        children: [
+                          const Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text("Req In",
+                                  style: TextStyle(color: Colors.black54)),
+                              Text("Req Out",
+                                  style: TextStyle(color: Colors.black54)),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                item.regIn ?? "",
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                item.regOut ?? "",
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ],
+                      )
+                    : const SizedBox.shrink(),
+                //_showCustomBottomSheet(viewModel)
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
-  void changedatetime(fromdate) {
-    var parsedDate = DateTime.parse('$fromdate 00:00:00');
-  }
+  // void _showCustomBottomSheet(BuildContext context,ViewAttendanceModel viewModel) {
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true, // Allows the sheet to be full screen height
+  //     builder: (context) {
+  //       return LayoutBuilder(
+  //         builder: (context, constraints) {
+  //           return Column(
+  //             children: [
+  //               Expanded(
 
-  void getattendancecheckdata() async {
+  //                 child: ListView.builder(
+  //                   itemCount: viewModel.,
+  //                   itemBuilder: (context, index) {
+  //                     return ListTile(
+  //                       title: Text('Item $index'),
+  //                       onTap: () {
+  //                         Navigator.pop(context,
+  //                             index); // Dismiss sheet and return value
+  //                       },
+  //                     );
+  //                   },
+  //                 ),
+  //               ),
+  //             ],
+  //           );
+  //         },
+  //       );
+  //     },
+  //   );
+  // }
+
+  void getOneMonthAttendance() async {
     setState(() {
       loading = true;
     });
-    ApiService.viewattendancehistorylog().then((response) {
+
+    ApiService.viewattendancebiohistory().then((response) {
       setState(() {
         loading = false;
       });
+
       if (response.statusCode == 200) {
-        if (jsonDecode(response.body)['status'].toString() == "true") {
-          viewModel =
-              ViewAttendanceModelNew.fromJson(jsonDecode(response.body));
+        final decoded = jsonDecode(response.body);
+
+        if (decoded['status'] == true) {
+          viewModel.clear();
+
+          List list = decoded['message'];
+
+          viewModel.addAll(
+            list.map((e) => ViewAttendanceModel.fromJson(e)).toList(),
+          );
         } else {
-          viewModel.message = null;
+          viewModel.clear();
         }
       } else {
         throw Exception(jsonDecode(response.body)['message'].toString());
@@ -387,9 +341,49 @@ class _ViewAttendanceState extends State<ViewAttendance> {
       setState(() {
         loading = false;
       });
-      AppUtils.showSingleDialogPopup(context, e.toString(), "Ok", onexitpopup,
-          AssetsImageWidget.errorimage);
+
+      AppUtils.showSingleDialogPopup(
+        context,
+        e.toString(),
+        "Ok",
+        onexitpopup,
+        AssetsImageWidget.errorimage,
+      );
     });
+  }
+
+  String checkeffectivehours(
+    String starttime,
+    String endtime,
+    int status,
+  ) {
+    try {
+      if (starttime.isEmpty || endtime.isEmpty) return "";
+
+      // ⏰ Input format: 12:07:00 PM
+      final format = DateFormat("hh:mm:ss a");
+
+      DateTime start = format.parse(starttime);
+      DateTime end = format.parse(endtime);
+
+      // 🛑 If checkout is next day
+      if (end.isBefore(start)) {
+        end = end.add(const Duration(days: 1));
+      }
+
+      Duration diff = end.difference(start);
+
+      final hours = diff.inHours;
+      final minutes = diff.inMinutes % 60;
+
+      if (status == 0) {
+        return "Effective Hours $hours hrs $minutes mins";
+      } else {
+        return "Gross Hours $hours hrs $minutes mins";
+      }
+    } catch (e) {
+      return "";
+    }
   }
 
   void onexitpopup() {
@@ -400,53 +394,18 @@ class _ViewAttendanceState extends State<ViewAttendance> {
     Navigator.of(context).pop();
     // Navigator.of(context).pop();
   }
+}
 
-  validatetiming(String starttime) {
-    var shiftstarttime = "10:00:00";
-    //var shiftendtime= "06:30 PM";
-    var format = DateFormat("hh:mm:ss");
-    var start = format.parse(starttime);
-    // var end = format.parse(endtime);
-    var begin = format.parse(shiftstarttime);
+bool isWithin3Days(String dateStr) {
+  try {
+    DateTime itemDate = DateFormat("dd/MM/yyyy").parse(dateStr);
+    DateTime today = DateTime.now();
 
-    if (starttime.isNotEmpty) {
-      if (start.isBefore(begin)) {
-        print('ONTIME');
-        return 'ON TIME';
-      } else if (start.isAfter(begin)) {
-        Duration diff = start.difference(begin);
-        final hours = diff.inHours;
-        final minutes = diff.inMinutes % 60;
-        return '$hours hours $minutes minutes LATE';
-      } else if (start.isAtSameMomentAs(begin)) {
-        return 'ON TIME';
-      }
-      // if (start.isBefore(end)) {
-      //   //end = end.add(Duration(days: 1));
-      //   Duration diff = end.difference(start);
-      //   final hours = diff.inHours;
-      //   final minutes = diff.inMinutes % 60;
-      //   print('$hours hours $minutes minutes');
-      // } else {}
-    }
-  }
+    DateTime threeDaysBefore = today.subtract(const Duration(days: 3));
 
-  checkeffectivehours(String starttime, String endtime, int status) {
-    if (starttime.isNotEmpty && endtime.isNotEmpty) {
-      var format = DateFormat("HH:mm:ss");
-
-      var start = format.parse(starttime);
-      var end = format.parse(endtime);
-      //end = end.add(Duration(days: 1));
-      Duration diff = end.difference(start);
-      final hours = diff.inHours;
-      final minutes = diff.inMinutes % 60;
-      if (status == 0) {
-        return 'Effective Hours $hours hours $minutes minutes';
-      }
-      return 'Gross Hours $hours hours $minutes minutes';
-    } else {
-      return '';
-    }
+    return itemDate.isAfter(threeDaysBefore) ||
+        itemDate.isAtSameMomentAs(threeDaysBefore);
+  } catch (e) {
+    return false;
   }
 }

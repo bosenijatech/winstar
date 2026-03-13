@@ -4,7 +4,7 @@ import 'dart:math';
 import 'dart:developer' as dev;
 import 'dart:typed_data';
 import 'package:winstar/routenames.dart';
-import 'package:winstar/views/leave/dummy.dart';
+import 'package:winstar/views/leave/homepage.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
@@ -696,7 +696,7 @@ class _EditEducationState extends State<EditEducation> {
           if (mounted) {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (_) => const DummyScreen()),
+              MaterialPageRoute(builder: (_) => const HomePage()),
             );
           }
         } else {
@@ -756,7 +756,7 @@ class _EditEducationState extends State<EditEducation> {
           if (mounted) {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (_) => const DummyScreen()),
+              MaterialPageRoute(builder: (_) => const HomePage()),
             );
           }
         } else {

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:winstar/services/pref.dart';
 import 'package:winstar/utils/appcolor.dart';
 import 'package:winstar/utils/sharedprefconstants.dart';
-import 'package:winstar/views/leave/dummy.dart';
+import 'package:winstar/views/leave/homepage.dart';
 import 'package:winstar/views/login/loginpage.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -40,7 +40,7 @@ class _SplashScreenState extends State<SplashScreen> {
           alignment: Alignment.center,
           children: [
             Image(
-              image: AssetImage("assets/images/bindhaenlogo.png"),
+              image: AssetImage("assets/images/nijatechlogo.png"),
               height: 100,
               width: 100,
               fit: BoxFit.fill,
@@ -77,6 +77,6 @@ class _SplashScreenState extends State<SplashScreen> {
                         Prefs.getLoggedIn(SharefprefConstants.sharefloggedin) ==
                             false)
                     ? const LoginPage()
-                    : const DummyScreen())));
+                    : const HomePage())));
   }
 }

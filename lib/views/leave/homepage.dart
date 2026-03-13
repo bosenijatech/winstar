@@ -19,14 +19,14 @@ import 'package:winstar/utils/sharedprefconstants.dart';
 import 'package:winstar/views/widgets/assets_image_widget.dart';
 import 'package:http/http.dart' as http;
 
-class DummyScreen extends StatefulWidget {
-  const DummyScreen({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
-  State<DummyScreen> createState() => _DummyScreenState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _DummyScreenState extends State<DummyScreen> {
+class _HomePageState extends State<HomePage> {
   List<AnnouncementData> announcementList = [];
 
   bool loading = false;
@@ -86,7 +86,8 @@ class _DummyScreenState extends State<DummyScreen> {
                       children: [
                         headerSection(),
                         const SizedBox(height: 10),
-                        otherServicesSection(),
+                        //otherServicesSection(),
+                        gridViewItems(),
                         const SizedBox(height: 10),
                         if (announcementList.isNotEmpty) announcementSection(),
                         const SizedBox(height: 10),
@@ -186,256 +187,6 @@ class _DummyScreenState extends State<DummyScreen> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget otherServicesSection() {
-    final services = [
-      {
-        'icon': CupertinoIcons.person_2,
-        'label': 'My Profile',
-        'color': Colors.blue
-      },
-      {
-        'icon': Icons.flight_takeoff_rounded,
-        'label': 'Leave Request',
-        'color': Colors.purple
-      },
-      {
-        'icon': Icons.description_outlined,
-        'label': 'Letter Request',
-        'color': Colors.amber
-      },
-      {
-        'icon': Icons.picture_as_pdf,
-        'label': 'Pay Slip',
-        'color': Colors.green
-      },
-      {
-        'icon': Icons.account_balance_wallet_rounded,
-        'label': 'Expense Claim',
-        'color': Colors.deepPurple
-      },
-      {'icon': Icons.group, 'label': 'Team', 'color': Colors.redAccent},
-      {
-        'icon': Icons.devices_other,
-        'label': 'Asset Request',
-        'color': Colors.indigo
-      },
-      {
-        'icon': Icons.flight_takeoff_outlined,
-        'label': 'Comp Off Leave',
-        'color': Colors.pink
-      },
-      {
-        'icon': Icons.devices_other,
-        'label': 'Re-join Request',
-        'color': Colors.teal
-      },
-    ];
-
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-      padding: const EdgeInsets.all(5),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12.withOpacity(0.05),
-            blurRadius: 6,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: services.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 12,
-              childAspectRatio: 1.2,
-            ),
-            itemBuilder: (context, index) {
-              final service = services[index];
-              return GestureDetector(
-                onTap: () {
-                  if (index == 0) {
-                    Navigator.pushNamed(context, RouteNames.viewprofile)
-                        .then((_) {
-                      getAllEvents();
-                    });
-                  } else if (index == 1) {
-                    Navigator.pushNamed(context, RouteNames.viewleave)
-                        .then((_) {
-                      getAllEvents();
-                    });
-                  } else if (index == 2) {
-                    Navigator.pushNamed(context, RouteNames.viewletter)
-                        .then((_) {
-                      getAllEvents();
-                    });
-                  } else if (index == 3) {
-                    Navigator.pushNamed(context, RouteNames.payslip).then((_) {
-                      getAllEvents();
-                    });
-                  } else if (index == 4) {
-                    Navigator.pushNamed(context, RouteNames.reimview).then((_) {
-                      getAllEvents();
-                    });
-                  } else if (index == 5) {
-                    Navigator.pushNamed(context, RouteNames.myteam).then((_) {
-                      getAllEvents();
-                    });
-                  } else if (index == 6) {
-                    Navigator.pushNamed(context, RouteNames.viewasset)
-                        .then((_) {
-                      getAllEvents();
-                    });
-                  } else if (index == 7) {
-                    Navigator.pushNamed(context, RouteNames.viewcompoffleave)
-                        .then((_) {
-                      getAllEvents();
-                    });
-                  } else if (index == 8) {
-                    Navigator.pushNamed(context, RouteNames.viewrejoin)
-                        .then((_) {
-                      getAllEvents();
-                    });
-                  }
-                },
-                child: Column(
-                  children: [
-                    Container(
-                      width: 55,
-                      height: 55,
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                            color: service['color'] as Color, width: 1.5),
-                        borderRadius: BorderRadius.circular(16),
-                        color: (service['color'] as Color).withOpacity(0.05),
-                      ),
-                      child: Icon(service['icon'] as IconData,
-                          color: service['color'] as Color, size: 28),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      service['label'] as String,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.black87,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget dashboardGrid(double width) {
-    final List<Map<String, dynamic>> items = [
-      {
-        'icon': Icons.person,
-        'label': 'My Profile',
-        'color': const Color(0xff5cbc3c),
-        'route': RouteNames.viewprofile
-      },
-      {
-        'icon': Icons.calendar_today,
-        'label': 'Leave Request',
-        'color': const Color(0xfffe5d3b),
-        'route': RouteNames.viewleave
-      },
-      {
-        'icon': Icons.dock,
-        'label': 'Letter Request',
-        'color': const Color(0xffe32845),
-        'route': RouteNames.viewletter
-      },
-      {
-        'icon': Icons.receipt_long,
-        'label': 'Pay Slip',
-        'color': const Color(0xff31aaf3),
-        'route': RouteNames.payslip
-      },
-      {
-        'icon': Icons.task,
-        'label': 'View Claim',
-        'color': const Color(0xff785af6),
-        'route': RouteNames.reimview
-      },
-      {
-        'icon': Icons.people,
-        'label': 'Team',
-        'color': const Color(0xfff59d00),
-        'route': RouteNames.myteam
-      },
-      {
-        'icon': Icons.devices_other,
-        'label': 'Asset Request',
-        'color': const Color(0xfff500e9),
-        'route': RouteNames.viewasset
-      },
-    ];
-
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: items.length,
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: width < 600 ? 3 : 5,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
-        childAspectRatio: 1,
-      ),
-      itemBuilder: (context, index) {
-        final item = items[index];
-        return InkWell(
-          onTap: () => Navigator.pushNamed(context, item['route']),
-          borderRadius: BorderRadius.circular(20),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [item['color'], item['color'].withOpacity(0.8)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: item['color'].withOpacity(0.3),
-                  blurRadius: 8,
-                  offset: const Offset(2, 4),
-                )
-              ],
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(item['icon'], color: Colors.white, size: 30),
-                const SizedBox(height: 8),
-                Text(item['label'],
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600)),
-              ],
-            ),
-          ),
-        );
-      },
     );
   }
 
@@ -992,9 +743,174 @@ class _DummyScreenState extends State<DummyScreen> {
     }
   }
 
+  Widget gridViewItems() {
+    final categories = AppConstants.categories;
+    return GridView.builder(
+      itemCount: categories.length,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        childAspectRatio: 0.90,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 14,
+      ),
+      itemBuilder: (context, index) {
+        return CategoryCard(
+          index: index,
+          icon: categories[index]["icon"],
+          text: categories[index]["text"],
+          press: () {
+            if (index == 0) {
+              Navigator.pushNamed(context, RouteNames.attendancehistory)
+                  .then((_) => getAllEvents());
+            }
+            if (index == 1) {
+              Navigator.pushNamed(context, RouteNames.viewattendance)
+                  .then((_) => getAllEvents());
+            }
+            if (index == 2) {
+              Navigator.pushNamed(context, RouteNames.viewleave)
+                  .then((_) => getAllEvents());
+            }
+            if (index == 3) {
+              Navigator.pushNamed(context, RouteNames.viewcompoffleave)
+                  .then((_) => getAllEvents());
+            }
+            if (index == 4) {
+              Navigator.pushNamed(context, RouteNames.viewletter)
+                  .then((_) => getAllEvents());
+            }
+            if (index == 5) {
+              Navigator.pushNamed(context, RouteNames.payslip)
+                  .then((_) => getAllEvents());
+            }
+            if (index == 6) {
+              Navigator.pushNamed(context, RouteNames.viewasset)
+                  .then((_) => getAllEvents());
+            }
+            if (index == 7) {
+              Navigator.pushNamed(context, RouteNames.viewrejoin)
+                  .then((_) => getAllEvents());
+            }
+            if (index == 8) {
+              Navigator.pushNamed(context, RouteNames.viewprofile)
+                  .then((_) => getAllEvents());
+            }
+          },
+        );
+      },
+    );
+  }
+
   void onexitpopup() {
     AppUtils.pop(context);
   }
 
   String formatDate(DateTime date) => DateFormat('d MMMM y').format(date);
+}
+
+class CategoryCard extends StatelessWidget {
+  const CategoryCard({
+    super.key,
+    required this.index,
+    required this.icon,
+    required this.text,
+    required this.press,
+  });
+
+  final int index;
+  final IconData icon;
+  final String text;
+  final GestureTapCallback press;
+
+  Color _getBgColor(int index) {
+    switch (index) {
+      case 0:
+        return const Color(0xFF2563EB); // Attendance - Blue
+      case 1:
+        return const Color(0xFF16A34A); // Leave - Green
+      case 2:
+        return const Color(0xFF7C3AED); // Letter - Purple
+      case 3:
+        return const Color(0xFFEA580C); // Payslip - Orange
+      case 4:
+        return const Color(0xFFDC2626); // Asset - Red
+      case 5:
+        return const Color(0xFF0F766E); // Rejoin - Teal
+      default:
+        return const Color(0xFF334155);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bg = _getBgColor(index);
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: press,
+        borderRadius: BorderRadius.circular(18),
+        splashColor: bg.withOpacity(0.12),
+        highlightColor: bg.withOpacity(0.06),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(18),
+            color: Colors.white,
+            border: Border.all(
+              color: Colors.grey.withOpacity(0.15),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.06),
+                blurRadius: 16,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                height: 54,
+                width: 54,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(18),
+                  color: bg,
+                  boxShadow: [
+                    BoxShadow(
+                      color: bg.withOpacity(0.25),
+                      blurRadius: 12,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  icon,
+                  size: 26,
+                  color: Colors.white, // ✅ All icons white
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                text,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  height: 1.1,
+                  color: Color(0xFF0F172A),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }

@@ -12,14 +12,19 @@ class ApiDetails {
   static const String viewbioattendancehistorylog =
       'api/mobileapp/viewattendancehistorylog';
   static const String viewbioattendancehistory =
-      'api/mobileapp/viewattendancehistory';
+      'api/mobileapp/viewdailyattendancehistory';
   static const String viewannouncement = 'api/mobileapp/viewannouncement';
 
-  static const String viewbioattendance = 'api/mobileapp/viewattendance';
+  static const String viewbioattendance = 'api/mobileapp/viewdailyattendance';
   static const String pendinglistcount = 'api/mobileapp/getpendingcount';
-  static const String updatebioattendance = 'api/mobileapp/updateattendance';
+  static const String updatebioattendance =
+      'api/mobileapp/updatedailyattendance'; //updateattendance
 
-  static const String addbioattendance = 'api/mobileapp/addattendance';
+  static const String addbioattendance =
+      'api/mobileapp/adddailyattendance'; //addattendance
+
+  static const String savebio =
+      'api/mobileapp/addupdatedailyattendance'; //addattendance
 
   static const String applyleave = 'api/mobileapp/applyempleave';
 
@@ -57,7 +62,8 @@ class ApiDetails {
 
   static const String addgrievance = 'api/mobile/addgrievance';
 
-  static const String applyreqularization = 'api/mobileapp/applyrequlatization';
+  static const String applyreqularization =
+      'api/mobileapp/applydailyrequlatization';
   static const String getyearlist = 'api/mobileapp/getyearlist';
   static const String forgetpassword = 'api/mobileapp/sendmail';
 
@@ -87,5 +93,4 @@ class ApiDetails {
 
   static const String viewleavecompoff = 'api/mobileapp/viewleavecompoff';
   static const String getleavetypelist = 'api/mobileapp/getleavetype';
-  
 }

@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-import 'package:winstar/views/leave/dummy.dart';
+import 'package:winstar/views/leave/homepage.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -754,7 +754,7 @@ class _EditDocumentsState extends State<EditDocuments> {
           if (mounted) {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (_) => const DummyScreen()),
+              MaterialPageRoute(builder: (_) => const HomePage()),
             );
           }
         } else {
@@ -835,7 +835,7 @@ class _EditDocumentsState extends State<EditDocuments> {
           if (mounted) {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (_) => const DummyScreen()),
+              MaterialPageRoute(builder: (_) => const HomePage()),
             );
           }
         } else {

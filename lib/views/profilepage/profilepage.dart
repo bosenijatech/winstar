@@ -110,6 +110,7 @@ class _ProfilePageState extends State<ProfilePage>
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           primarydetails(),
+                          hierarchyPage(),
                           contactdetails(),
                           addressdetails(),
                           addressdetails2(),
@@ -134,39 +135,7 @@ class _ProfilePageState extends State<ProfilePage>
                           const SizedBox(
                             height: 10,
                           ),
-
                           skillsdetails(),
-                          // InkWell(
-                          //   onTap: () {
-                          //     Navigator.push(
-                          //       context,
-                          //       MaterialPageRoute(
-                          //           builder: (context) => EditWorkExperience(
-                          //               model: empinfomodel,
-                          //               iseditable: false,
-                          //               position: 0)),
-                          //     ).then((_) => getdata());
-                          //   },
-                          //   child: Padding(
-                          //     padding: const EdgeInsets.all(10),
-                          //     child: Row(
-                          //       mainAxisAlignment:
-                          //           MainAxisAlignment.spaceBetween,
-                          //       crossAxisAlignment: CrossAxisAlignment.start,
-                          //       children: [
-                          //         AppUtils.buildNormalText(
-                          //             text: "Work Experience",
-                          //             fontSize: 18,
-                          //             fontWeight: FontWeight.bold),
-                          //         AppUtils.buildNormalText(
-                          //             text: "ADD",
-                          //             fontSize: 14,
-                          //             color: Appcolor.twitterBlue),
-                          //       ],
-                          //     ),
-                          //   ),
-                          // ),
-                          // workdetails(),
                           const SizedBox(
                             height: 10,
                           ),
@@ -345,6 +314,139 @@ class _ProfilePageState extends State<ProfilePage>
       attachmentURL = result['url'];
       updateuserimage(attachmentID, attachmentURL);
     }
+  }
+
+  Widget hierarchyPage() {
+    var model = empinfomodel.message;
+    Widget buildTile({
+      required String title,
+      required String subtitle,
+      bool showConnector = false,
+    }) {
+      return Column(
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Column(
+                children: [
+                  const CircleAvatar(
+                    radius: 30,
+                    backgroundImage:
+                        AssetImage('assets/images/manandwomen.png'),
+                  ),
+                  if (showConnector)
+                    Container(
+                      width: 2,
+                      height: 30,
+                      color: Colors.black,
+                    ),
+                ],
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AppUtils.buildNormalText(
+                        text: title, fontSize: 14, fontWeight: FontWeight.w300),
+                    const SizedBox(height: 2),
+                    AppUtils.buildNormalText(
+                      text: subtitle,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
+        ],
+      );
+    }
+
+    return Card(
+      elevation: 2,
+      color: Colors.white,
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            buildTile(
+              title: "Head Of The Department(HOD)",
+              subtitle: model != null ? model.hod ?? "" : "",
+              showConnector: true,
+            ),
+            buildTile(
+              title: "Line Manager",
+              subtitle: model != null ? model.linemanager ?? "" : "",
+              showConnector: true,
+            ),
+            buildTile(
+              title: "Supervisor",
+              subtitle: model != null ? model.supervisor ?? "" : "",
+              showConnector: true,
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Column(
+                  children: [
+                    SizedBox(
+                      width: 60,
+                      height: 60,
+                      child: CircleAvatar(
+                        backgroundColor: Colors.white,
+                        radius: 30,
+                        child: CachedNetworkImage(
+                          imageUrl:
+                              model != null ? model.imageurl.toString() : "",
+                          imageBuilder: (context, imageProvider) => Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              image: DecorationImage(
+                                image: imageProvider,
+                                fit: BoxFit.fitHeight,
+                              ),
+                            ),
+                          ),
+                          placeholder: (context, url) =>
+                              const CircularProgressIndicator(),
+                          errorWidget: (context, url, error) =>
+                              const CircleAvatar(
+                                  radius: 40,
+                                  backgroundImage: AssetImage(
+                                      'assets/images/manandwomen.png')),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AppUtils.buildNormalText(
+                        text: model != null
+                            ? "${model.firstName.toString()}-${model.lastName}"
+                            : "",
+                        fontWeight: FontWeight.w500,
+                        fontSize: 14,
+                      ),
+                      const SizedBox(height: 2),
+                      AppUtils.buildNormalText(
+                          text: model != null ? "${model.department}" : "",
+                          fontSize: 14),
+                    ],
+                  ),
+                )
+              ],
+            )
+          ],
+        ),
+      ),
+    );
   }
 
   void updateuserimage(attachid, imageurl) {
@@ -533,7 +635,7 @@ class _ProfilePageState extends State<ProfilePage>
                           fontSize: 14,
                           color: Colors.black),
                       const SizedBox(
-                        height: 20,
+                        height: 60,
                       ),
                       AppUtils.buildNormalText(
                           text: "DEPT",
@@ -754,7 +856,7 @@ class _ProfilePageState extends State<ProfilePage>
                         fontSize: 14,
                         color: Colors.black),
                     const SizedBox(
-                      height: 15,
+                      height: 20,
                     ),
                     AppUtils.buildNormalText(
                         text: "RELIGION",
@@ -768,7 +870,7 @@ class _ProfilePageState extends State<ProfilePage>
                         fontSize: 14,
                         color: Colors.black),
                     const SizedBox(
-                      height: 30,
+                      height: 10,
                     ),
                     AppUtils.buildNormalText(
                         text: "WORKING REGION",

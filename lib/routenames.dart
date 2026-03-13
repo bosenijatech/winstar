@@ -33,9 +33,10 @@ class RouteNames {
   static const String addgrievance = "addgrievance";
   static const String changepassword = "changepassword";
   static const String payslip = "payslip";
-  static const String viewattendance = "viewattendance";
+  static const String viewattendance = "viewdailyattendance";
 
   static const String viewprofile = "viewprofile";
-  static const String viewdummy = "viewdummy";
+  static const String homepage = "viewdummy";
   static const String myteam = "myteam";
+  static const String forgotpassword = "forgotpassword";
 }

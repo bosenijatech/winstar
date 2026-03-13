@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'package:flutter/cupertino.dart';
 import 'package:winstar/models/assetnamemodel.dart';
 import 'package:winstar/models/assettypemodel.dart';
 import 'package:winstar/models/classmodel.dart';
@@ -30,7 +31,7 @@ import 'package:intl/intl.dart';
 
 class ApiService {
   static String mobilecurrentdate =
-      DateFormat("yyyy-MM-dd").format(DateTime.now()); //2023-07-15";
+      DateFormat("dd/MM/yyyy").format(DateTime.now()); //2023-07-15";
 
   static const int timeOutDuration = 60;
 
@@ -147,17 +148,14 @@ class ApiService {
   }
 
   static Future<http.Response> viewattendancebiohistory() async {
-    DateTime today = DateTime.now();
-    String cdate = DateFormat("yyyy-MM-dd").format(today);
-
+  
     var url = Uri.parse(
         AppConstants.apiBaseUrl + ApiDetails.viewbioattendancehistory);
 
     Map<String, String> headers = {"Content-Type": "application/json"};
 
     var body = {
-      "nsId": Prefs.getNsID('nsid'),
-      "docdate": cdate,
+      "nsId": Prefs.getNsID('nsid')
     };
     var response =
         await http.post(url, body: jsonEncode(body), headers: headers).timeout(
@@ -172,12 +170,12 @@ class ApiService {
 
     Map<String, String> headers = {
       "Content-Type": "application/json",
-      //'Authorization': 'Bearer ${Prefs.getToken('token')}'
     };
     var body = {
-      "nsId": Prefs.getNsID('nsid'),
+      "nsId": Prefs.getNsID(SharefprefConstants.sharednsid),
       "currentdate": mobilecurrentdate
     };
+    debugPrint(jsonEncode(body));
     var response =
         await http.post(url, body: jsonEncode(body), headers: headers).timeout(
               const Duration(seconds: timeOutDuration),
@@ -200,7 +198,7 @@ class ApiService {
   }
 
   static Future<http.Response> postBioAttendance(dynamic json) async {
-    var url = Uri.parse(AppConstants.apiBaseUrl + ApiDetails.addbioattendance);
+    var url = Uri.parse(AppConstants.apiBaseUrl + ApiDetails.savebio);
     Map<String, String> headers = {"Content-Type": "application/json"};
     var response = await http
         .post(url, body: jsonEncode(json), headers: headers)
@@ -1405,13 +1403,18 @@ class ApiService {
     }
   }
 
-
   static Future<List<LeaveTypeModel>> getleaveType({
     String filter = "",
-    String leavetypeid = "",
+    String? type,
   }) async {
     final response = await http.get(
-      Uri.parse("${AppConstants.apiBaseUrl}api/mobileapp/getleavetype"),
+      Uri.parse("${AppConstants.apiBaseUrl}api/mobileapp/getleavetypenew")
+          .replace(
+        queryParameters: {
+          "empId": Prefs.getNsID(SharefprefConstants.sharednsid),
+          "type": type
+        },
+      ),
       headers: {
         "Content-Type": "application/json",
         "Authorization": "Bearer ${Prefs.getToken('token')}",
@@ -1423,31 +1426,39 @@ class ApiService {
       final decoded = jsonDecode(response.body);
       final payload = decoded['payload'] as List;
 
-      final loggedEmpId = Prefs.getEmpID(SharefprefConstants.sharednsid);
+      // ✅ Get current logged employee id
+      final loggedEmpId = Prefs.getNsID(SharefprefConstants.sharednsid);
+      print("👤 Logged Emp ID: $loggedEmpId");
 
-      // ✅ Find only this employee
+      // ✅ Find employee object matching empid
       final employee = payload.firstWhere(
         (e) => e['empid'].toString() == loggedEmpId.toString(),
         orElse: () => null,
       );
 
-      if (employee == null) return [];
+      if (employee == null) {
+        print("⚠️ No employee found with empid: $loggedEmpId");
+        return [];
+      }
 
-      // ✅ Extract leave types for this employee
-      List<dynamic> leaveTypes = employee['leaveTypes'] ?? [];
+      // ✅ Extract leave types for that employee
+      final leaveTypes = employee['leaveTypes'] ?? [];
 
-      List<LeaveTypeModel> list =
-          leaveTypes.map((e) => LeaveTypeModel.fromJson(e)).toList();
+      // ✅ Convert to model list
+      final allLeaveTypes =
+          (leaveTypes as List).map((e) => LeaveTypeModel.fromJson(e)).toList();
 
-      if (filter.isEmpty) return list;
+      final filtered = allLeaveTypes.where((item) {
+        final matchesName = filter.isEmpty ||
+            item.leaveTypeName.toLowerCase().contains(filter.toLowerCase());
+        // final notExcluded =
+        //     item.leaveTypeId.toString() != excludeLeaveTypeId.toString();
+        return matchesName;
+      }).toList();
 
-      return list
-          .where((item) =>
-              item.leaveTypeId.toString() == leavetypeid &&
-              item.leaveTypeName.toLowerCase().contains(filter.toLowerCase()))
-          .toList();
+      return filtered;
     } else {
-      throw Exception("Failed to load items");
+      return [];
     }
   }
 
@@ -1523,7 +1534,7 @@ class ApiService {
             .reversed
             .toList();
       } else {
-        throw Exception(decoded['message'] ?? 'API returned failure status');
+        return [];
       }
     } else {
       throw Exception(
@@ -1696,5 +1707,61 @@ class ApiService {
       throw Exception(
           'Failed to load department list (status: ${response.statusCode})');
     }
+  }
+
+  static Future<List<LeaveTypeModel>> getleaveTypeComp(String type) async {
+    final response = await http.get(
+      Uri.parse("${AppConstants.apiBaseUrl}api/mobileapp/getleavetypenew")
+          .replace(
+        queryParameters: {
+          "empId": Prefs.getNsID('nsid').toString(),
+          "type": type
+        },
+      ),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer ${Prefs.getToken('token')}",
+      },
+    );
+
+    if (response.statusCode == 200 &&
+        jsonDecode(response.body)['success'] == true) {
+      final decoded = jsonDecode(response.body);
+      final payload = decoded['payload'] as List;
+
+      // ✅ If API returns only 1 employee record, skip empid filter
+      final employee = payload.isNotEmpty ? payload.first : null;
+
+      if (employee == null) {
+        print("⚠️ No employee data found");
+        return [];
+      }
+
+      final leaveTypes = employee['leaveTypes'] ?? [];
+      print(leaveTypes);
+      final allLeaveTypes =
+          (leaveTypes as List).map((e) => LeaveTypeModel.fromJson(e)).toList();
+
+      return allLeaveTypes;
+    } else {
+      throw Exception("Failed to load leave types");
+    }
+  }
+
+  static Future<http.Response> viewAttendanceHistoryLog() async {
+    var url = Uri.parse(
+        AppConstants.apiBaseUrl + ApiDetails.viewbioattendancehistorylog);
+
+    Map<String, String> headers = {"Content-Type": "application/json"};
+
+    var body = {
+      "nsId": int.parse(Prefs.getNsID('nsid').toString()),
+    };
+    print(jsonEncode(body));
+    var response =
+        await http.post(url, body: jsonEncode(body), headers: headers).timeout(
+              const Duration(seconds: timeOutDuration),
+            );
+    return response;
   }
 }
